@@ -1,0 +1,1 @@
+This project implements a mesh segmentation algorithm that partitions 3D mesh models into semantically meaningful regions. The goal is to break down complex 3D meshes (often used in computer graphics, CAD, and 3D printing) into smaller, more manageable components for applications such as 3D object recognition, animation, and object retrieval.
