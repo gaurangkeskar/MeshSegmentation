@@ -19,12 +19,13 @@ private slots:
 
 private:
     void setupUi();
-    OpenGlWidget::Data convertTriangulationToGraphicsObject(const Triangulation& inputTriangulation);
+    void convertTriangulationToGraphicsObject(const Triangulation& inputTriangulation, OpenGlWidget::Data&);
 
     QPushButton* loadFile;
     QPushButton* segment;
 
     OpenGlWidget* openglWidget;
+    OpenGlWidget* openglWidgetOutput;
 
     Triangulation inputTriangulation;
     QString inputFilePath;

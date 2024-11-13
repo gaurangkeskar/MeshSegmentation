@@ -28,6 +28,8 @@ public:
     QSize minimumSizeHint() const override;
     QSize sizeHint() const override;
     void sync(float zoomLevel, QVector3D rotation, QVector2D panOffset);
+    void reset();
+
 
 signals:
         void viewChange(float zoomLevel, QVector3D rotation, QVector2D panOffset);

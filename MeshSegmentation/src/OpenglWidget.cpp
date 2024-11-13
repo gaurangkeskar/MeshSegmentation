@@ -42,6 +42,14 @@ void OpenGlWidget::sync(float inZoomLevel, QVector3D inRotation, QVector2D inPan
     update();
 }
 
+void OpenGlWidget::reset() {
+    // Clear the vertex and normal data
+    data.vertices.clear();
+    data.normals.clear();
+}
+
+
+
 void OpenGlWidget::initializeGL()
 {
     if (data.vertices.size() > 0 && data.normals.size() > 0)
