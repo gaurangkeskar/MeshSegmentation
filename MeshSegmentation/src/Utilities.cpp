@@ -33,4 +33,3 @@ double Utilities::getAngle(Point& n1, Point& n2, Triangulation& triangulation)
 	double angle = acos(dotProduct(n1, n2, triangulation) / (magnitude(n1, triangulation) * magnitude(n2, triangulation)));
 	return angle;
 }
-

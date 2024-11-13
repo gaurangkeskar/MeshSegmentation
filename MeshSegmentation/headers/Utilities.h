@@ -14,6 +14,5 @@ public:
 	static double magnitude(Point& p1, Triangulation& triangulation);
 	static double getAngle(Point& n1, Point& n2, Triangulation& triangulation);
 
-
 };
 
