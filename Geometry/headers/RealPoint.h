@@ -21,7 +21,6 @@ public:
 	RealPoint operator-(const RealPoint& other) const;
 	RealPoint operator+(const RealPoint& other) const;
 	void assign(RealPoint& other);
-	void assign(Point& other, Triangulation& triangulation);
 	RealPoint operator*(double scalar) const;
 };
 

@@ -1,7 +1,7 @@
 ﻿#include "Surface.h"
 #include "Utilities.h"
 #include "RealPoint.h"
-#define TOLERANCE 0.20944
+#define TOLERANCE 0.0174533
 
 Surface::Surface()
 {
@@ -19,11 +19,10 @@ void Surface::getPlanarSurfaces(Triangulation& inputTriangulation)
 	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
 		if (grouped[i]) continue;
 		Triangulation currentTriangulation;
-		RealPoint n1(0, 0, 0);
-		n1.assign(inputTriangulation.Triangles[i].Normal(), inputTriangulation);	
+		const RealPoint n1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
-		//00inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
+		//inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
 		grouped[i] = true;
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
 			if (grouped[j]) {
@@ -59,8 +58,8 @@ void Surface::getSphericalSurfaces(Triangulation& inputTriangulation)
 		if (grouped[i]) continue;
 		Triangulation currentTriangulation;
 		RealPoint intersection(0, 0, 0);
-		const RealPoint p1(inputTriangulation.Triangles[i].P1().X(), inputTriangulation.Triangles[i].P1().Y(), inputTriangulation.Triangles[i].P1().Z());
-		const RealPoint n1(inputTriangulation.Triangles[i].Normal().X(), inputTriangulation.Triangles[i].Normal().Y(), inputTriangulation.Triangles[i].Normal().Z());
+		RealPoint p1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().Z()]);
+		RealPoint n1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
 		//inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
@@ -69,19 +68,21 @@ void Surface::getSphericalSurfaces(Triangulation& inputTriangulation)
 			if (grouped[j]) {
 				continue;
 			}
-			const RealPoint n2(inputTriangulation.Triangles[j].Normal().X(), inputTriangulation.Triangles[j].Normal().Y(), inputTriangulation.Triangles[j].Normal().Z());
+			RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
 			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
-				const RealPoint p2(inputTriangulation.Triangles[j].P1().X(), inputTriangulation.Triangles[j].P1().Y(), inputTriangulation.Triangles[j].P1().Z());
-				
-				RealPoint tempIntersection(Utilities::findIntersection(p1, n1, p1, n1));
-				if (!flag) {
-					intersection.assign(tempIntersection);
-					flag = true;
-				}
-				if (intersection == tempIntersection) {
-					currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
-					/*inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);*/
-					grouped[j] = true;
+				RealPoint p2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Z()]);
+
+				RealPoint tempIntersection(0, 0, 0);
+				if (Utilities::findIntersection(p1, n1, p1, n1, tempIntersection)) {
+					if (!flag) {
+						intersection.assign(tempIntersection);
+						flag = true;
+					}
+					if (intersection == tempIntersection) {
+						currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
+						/*inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);*/
+						grouped[j] = true;
+					}
 				}
 			}
 		}

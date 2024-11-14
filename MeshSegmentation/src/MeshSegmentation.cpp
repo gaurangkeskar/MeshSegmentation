@@ -54,16 +54,16 @@ void MeshSegmentation::onSegmentation()
 {
     Surface surface;
     surface.getPlanarSurfaces(inputTriangulation);
-    //surface.getSphericalSurfaces(inputTriangulation);
+    surface.getSphericalSurfaces(inputTriangulation);
     OpenGlWidget::Data data;
     for (int i = 0; i < surface.planarSurfaces.size(); i++) {
         Triangulation triangulation = surface.planarSurfaces[i];
         convertTriangulationToGraphicsObject(triangulation, data);
     }
-   /* for (int i = 0; i < surface.sphericalSurfaces.size(); i++) {
+    for (int i = 0; i < surface.sphericalSurfaces.size(); i++) {
         Triangulation triangulation = surface.sphericalSurfaces[i];
         convertTriangulationToGraphicsObject(triangulation, data);
-    }*/
+    }
     openglWidgetOutput->setData(data);
 }
 
