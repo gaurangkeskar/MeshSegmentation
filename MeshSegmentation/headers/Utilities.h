@@ -10,9 +10,9 @@ public:
 	Utilities();
 	~Utilities();
 
-	static double dotProduct(Point& p1, Point& p2, Triangulation& triangulation);
-	static double magnitude(Point& p1, Triangulation& triangulation);
-	static double getAngle(Point& n1, Point& n2, Triangulation& triangulation);
+	static double dotProduct(const Point& p1, const Point& p2, const Triangulation& triangulation);
+	static double magnitude(const Point& p1, const Triangulation& triangulation);
+	static double getAngle(const Point& n1,const Point& n2, const Triangulation& triangulation);
 
 };
 

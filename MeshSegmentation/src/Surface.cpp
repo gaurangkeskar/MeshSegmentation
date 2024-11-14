@@ -1,6 +1,10 @@
 ﻿#include "Surface.h"
 #include "Utilities.h"
-#define TOLERANCE 0.0000001
+#include <unordered_set>
+
+#define PLANAR_TOLERANCE 0.0872665
+#define SPHERICAL_TOLERANCE 0.174533
+#define CYLINDRICAL_TOLERANCE 0.1
 
 Surface::Surface()
 {
@@ -12,77 +16,62 @@ Surface::~Surface()
 
 }
 
-void Surface::getPlanarSurfaces(Triangulation& inputTriangulation)
+void Surface::segmentTriangles(Triangulation& triangulation)
 {
-	std::vector<bool> grouped(inputTriangulation.Triangles.size(), false);
-	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
-		if (grouped[i]) continue;
-		Triangulation currentTriangulation;
-		Point n1 = inputTriangulation.Triangles[i].Normal();
-		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
-		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
-		grouped[i] = true;
-		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-			if (grouped[j]) {
-				continue;
-			}
-			Point n2 = inputTriangulation.Triangles[j].Normal();
-			
-			if (fabs(Utilities::getAngle(n1, n2, inputTriangulation)) < TOLERANCE) {
-				currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
-				grouped[j] = true;
-			}
-		}
-		if(currentTriangulation.Triangles.size()>1)
-			planarSurfaces.push_back(currentTriangulation);
-	}
-}
+    std::unordered_set<int> visited;
+    Utilities utils;
 
-void Surface::getCylindricalSurfaces(Triangulation& inputTriangulation)
-{
+    for (int i = 0; i < triangulation.Triangles.size(); i++) {
+        if (visited.find(i) != visited.end()) continue;
 
-}
+        Geometry::Triangulation currentSurface;
+        currentSurface.UniqueNumbers = triangulation.UniqueNumbers;
 
-void Surface::getSphericalSurfaces(Triangulation& inputTriangulation)
-{
-    std::vector<bool> grouped(inputTriangulation.Triangles.size(), false);
+        const Point& normal1 = triangulation.Triangles[i].Normal();
+        bool isPlanar = true;
 
-    for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
-        if (grouped[i]) continue;
+        for (int j = i + 1; j < triangulation.Triangles.size(); j++) {
+            if (visited.find(j) != visited.end()) continue;
 
-        Triangulation currentTriangulation;
-        currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
-        currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
-        grouped[i] = true;
+            const Point& normal2 = triangulation.Triangles[j].Normal();
+            double angle = utils.getAngle(normal1, normal2, triangulation);
 
-        // Get the center point of the first triangle (use average of its vertices)
-        Triangle& firstTriangle = inputTriangulation.Triangles[i];
-        //Point center = (firstTriangle.P1() + firstTriangle.P2() + firstTriangle.P3()) / 3.0;
+            if (angle < PLANAR_TOLERANCE) {
+                currentSurface.Triangles.push_back(triangulation.Triangles[j]);
+                visited.insert(j);
+                setColor(j, "red");
+            }
+            else if (angle < SPHERICAL_TOLERANCE) {
+                bool isCylindricalSurface = isCylindrical(triangulation.Triangles[i].P1(), triangulation.Triangles[j].P1(), triangulation);
 
-        bool isSpherical = true;
-
-        for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-            if (grouped[j]) continue;
-
-            Triangle& triangle = inputTriangulation.Triangles[j];
-            //Point triangleCenter = (triangle.Vertex1 + triangle.Vertex2 + triangle.Vertex3) / 3.0;
-
-            // Calculate the distance from the center of the first triangle
-            //double distanceToCenter = (triangleCenter - center).Length();
-
-            // Check if the triangle is approximately equidistant from the same center
-            /*if (fabs(distanceToCenter) > SPHERE_TOLERANCE) {
-                isSpherical = false;
-                break;
-            }*/
-
-            currentTriangulation.Triangles.push_back(triangle);
-            grouped[j] = true;
+                if (isCylindricalSurface) {
+                    currentSurface.Triangles.push_back(triangulation.Triangles[j]);
+                    visited.insert(j);
+                    setColor(j, "blue");
+                }
+                else {
+                    currentSurface.Triangles.push_back(triangulation.Triangles[j]);
+                    visited.insert(j);
+                    setColor(j, "green");
+                }
+            }
         }
 
-        // If the surface contains more than one triangle and is spherical, add it
-        if (isSpherical && currentTriangulation.Triangles.size() > 1) {
-            sphericalSurfaces.push_back(currentTriangulation);
+        if (currentSurface.Triangles.size() > 1) {
+            segmentedSurfaces.push_back(currentSurface);
         }
     }
+}
+
+bool Surface::isCylindrical(const Point& p1, const Point& p2, const Triangulation& triangulation)
+{
+    double dist = sqrt(pow(triangulation.UniqueNumbers[p1.X()] - triangulation.UniqueNumbers[p2.X()], 2) +
+        pow(triangulation.UniqueNumbers[p1.Y()] - triangulation.UniqueNumbers[p2.Y()], 2) +
+        pow(triangulation.UniqueNumbers[p1.Z()] - triangulation.UniqueNumbers[p2.Z()], 2));
+    return dist < CYLINDRICAL_TOLERANCE;
+}
+
+void Surface::setColor(int triangleIndex, const std::string& color)
+{
+    triangleColors[triangleIndex] = color;
 }

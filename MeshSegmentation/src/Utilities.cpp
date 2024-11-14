@@ -9,7 +9,7 @@ Utilities::~Utilities()
 {
 }
 
-double Utilities::dotProduct(Point& p1, Point& p2, Triangulation& triangulation)
+double Utilities::dotProduct(const Point& p1, const Point& p2, const Triangulation& triangulation)
 {
 	
 	double x = triangulation.UniqueNumbers[p1.X()] * triangulation.UniqueNumbers[p2.X()];
@@ -18,7 +18,7 @@ double Utilities::dotProduct(Point& p1, Point& p2, Triangulation& triangulation)
 	return x+y+z;
 }
 
-double Utilities::magnitude(Point& p1, Triangulation& triangulation)
+double Utilities::magnitude(const Point& p1, const Triangulation& triangulation)
 {
 	
 	double x = pow(triangulation.UniqueNumbers[p1.X()], 2);
@@ -28,7 +28,7 @@ double Utilities::magnitude(Point& p1, Triangulation& triangulation)
 	return sqrt(x + y + z);
 }
 
-double Utilities::getAngle(Point& n1, Point& n2, Triangulation& triangulation)
+double Utilities::getAngle(const Point& n1, const Point& n2, const Triangulation& triangulation)
 {
 	double angle = acos(dotProduct(n1, n2, triangulation) / (magnitude(n1, triangulation) * magnitude(n2, triangulation)));
 	return angle;

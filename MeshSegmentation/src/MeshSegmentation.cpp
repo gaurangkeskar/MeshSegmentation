@@ -53,10 +53,10 @@ void MeshSegmentation::onLoadFileClick()
 void MeshSegmentation::onSegmentation() 
 {
     Surface surface;
-    surface.getPlanarSurfaces(inputTriangulation);
+    surface.segmentTriangles(inputTriangulation);
     OpenGlWidget::Data data;
-    for (int i = 0; i < surface.planarSurfaces.size(); i++) {
-        Triangulation triangulation = surface.planarSurfaces[i];
+    for (int i = 0; i < surface.segmentedSurfaces.size(); i++) {
+        Triangulation triangulation = surface.segmentedSurfaces[i];
         convertTriangulationToGraphicsObject(triangulation, data);
     }
     openglWidgetOutput->setData(data);

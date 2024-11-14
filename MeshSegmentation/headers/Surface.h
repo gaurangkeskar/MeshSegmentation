@@ -1,19 +1,23 @@
 #pragma once
 #include "Triangulation.h"
+#include <unordered_map>
+#include <string>
+
 using namespace Geometry;
 
 class Surface
 {
 public:
 
-	std::vector<Triangulation> planarSurfaces;
-	std::vector<Triangulation> sphericalSurfaces;
-	std::vector<Triangulation> cylindricalSurfaces;
+	std::vector<Triangulation> segmentedSurfaces;
+	std::unordered_map<int, std::string> triangleColors;
 
 	Surface();
 	~Surface();
 
-	void getPlanarSurfaces(Triangulation& inputTriangulation);
-	void getSphericalSurfaces(Triangulation& inputTriangulation);
-	void getCylindricalSurfaces(Triangulation& inputTriangulation);
+	void segmentTriangles(Triangulation& triangulation);
+
+private:
+	bool isCylindrical(const Point& p1, const Point& p2, const Triangulation& triangulation);
+	void setColor(int triangleIndex, const std::string& color);
 };
