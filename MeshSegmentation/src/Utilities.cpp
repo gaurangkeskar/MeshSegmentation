@@ -11,31 +11,30 @@ Utilities::~Utilities()
 {
 }
 
-double Utilities::dotProduct(const Point& p1, const Point& p2, const Triangulation& triangulation)
+double Utilities::dotProduct(const RealPoint& p1, const RealPoint& p2)
 {
 
-	double x = triangulation.UniqueNumbers[p1.X()] * triangulation.UniqueNumbers[p2.X()];
-	double y = triangulation.UniqueNumbers[p1.Y()] * triangulation.UniqueNumbers[p2.Y()];
-	double z = triangulation.UniqueNumbers[p1.Z()] * triangulation.UniqueNumbers[p2.Z()];
+    double x = p1.X() * p2.X();
+	double y = p1.Y() * p2.Y();
+	double z = p1.Z() * p2.Z();
 	return x + y + z;
 }
 
-double Utilities::magnitude(const Point& p1, const Triangulation& triangulation)
+double Utilities::magnitude(const RealPoint& p1)
 {
 
-	double x = pow(triangulation.UniqueNumbers[p1.X()], 2);
-	double y = pow(triangulation.UniqueNumbers[p1.Y()], 2);
-	double z = pow(triangulation.UniqueNumbers[p1.Z()], 2);
+	double x = pow(p1.X(), 2);
+	double y = pow(p1.Y(), 2);
+	double z = pow(p1.Z(), 2);
 
 	return sqrt(x + y + z);
 }
 
-double Utilities::getAngle(const Point& n1, const Point& n2, const Triangulation& triangulation)
+double Utilities::getAngle(const RealPoint& n1, const RealPoint& n2)
 {
-	double angle = acos(dotProduct(n1, n2, triangulation) / (magnitude(n1, triangulation) * magnitude(n2, triangulation)));
+	double angle = acos(dotProduct(n1, n2) / (magnitude(n1) * magnitude(n2)));
 	return angle;
 }
-
 
 RealPoint Utilities::crossProduct(const Point& n1, const Point& n2, const Triangulation& triangulation)
 {
@@ -46,7 +45,7 @@ RealPoint Utilities::crossProduct(const Point& n1, const Point& n2, const Triang
 }
 
 
-RealPoint findIntersection(const RealPoint& P1, const RealPoint& n1, const RealPoint& P2, const RealPoint& n2) {
+RealPoint Utilities::findIntersection(const RealPoint& P1, const RealPoint& n1, const RealPoint& P2, const RealPoint& n2) {
    
     double A11 = n1.X(), A12 = -n2.X();
     double A21 = n1.Y(), A22 = -n2.Y();
@@ -58,6 +57,7 @@ RealPoint findIntersection(const RealPoint& P1, const RealPoint& n1, const RealP
     double b3 = P2.Z() - P1.Z();
 
     double detA = A11 * A22 - A12 * A21;
+
     double detT = b1 * A22 - b2 * A12; 
     double detS = A11 * b2 - A21 * b1; 
 
