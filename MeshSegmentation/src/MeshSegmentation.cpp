@@ -5,7 +5,7 @@
 #include "Surface.h"
 using namespace MeshReader;
 
-MeshSegmentation::MeshSegmentation(QWidget *parent)
+MeshSegmentation::MeshSegmentation(QWidget* parent)
     : QMainWindow(parent)
 {
     setupUi();
@@ -24,7 +24,7 @@ void MeshSegmentation::setupUi()
     openglWidgetOutput = new OpenGlWidget(this);
 
     QGridLayout* layout = new QGridLayout(this);
-    
+
     layout->addWidget(loadFile, 0, 0);
     layout->addWidget(segment, 0, 1);
     layout->addWidget(openglWidget, 1, 0);
@@ -36,11 +36,11 @@ void MeshSegmentation::setupUi()
     centralWidget->setLayout(layout);
 }
 
-void MeshSegmentation::onLoadFileClick() 
+void MeshSegmentation::onLoadFileClick()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
         tr("Open File"), "", tr("files (*.stl)"));
-      
+
     if (!fileName.isEmpty())
     {
         inputFilePath = fileName;
@@ -50,7 +50,7 @@ void MeshSegmentation::onLoadFileClick()
 }
 
 
-void MeshSegmentation::onSegmentation() 
+void MeshSegmentation::onSegmentation()
 {
     Surface surface;
     surface.segmentTriangles(inputTriangulation);
@@ -73,9 +73,9 @@ void MeshSegmentation::loadSTLFile(const QString& filePath, Triangulation& input
 
 void MeshSegmentation::convertTriangulationToGraphicsObject(const Triangulation& triangulation, OpenGlWidget::Data& data)
 {
-    for (const Triangle & triangle : triangulation.Triangles)
+    for (const Triangle& triangle : triangulation.Triangles)
     {
-        for (const Point & point : triangle.Points())
+        for (const Point& point : triangle.Points())
         {
             data.vertices.push_back(triangulation.UniqueNumbers[point.X()]);
             data.vertices.push_back(triangulation.UniqueNumbers[point.Y()]);
@@ -92,5 +92,5 @@ void MeshSegmentation::convertTriangulationToGraphicsObject(const Triangulation&
         }
     }
 
-    return ;
+    return;
 }

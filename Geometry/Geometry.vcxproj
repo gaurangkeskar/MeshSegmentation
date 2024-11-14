@@ -143,12 +143,14 @@
   <ItemGroup>
     <ClInclude Include="headers\Matrix4x4.h" />
     <ClInclude Include="headers\Point.h" />
+    <ClInclude Include="headers\RealPoint.h" />
     <ClInclude Include="headers\Triangle.h" />
     <ClInclude Include="headers\Triangulation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Matrix4x4.cpp" />
     <ClCompile Include="src\Point.cpp" />
+    <ClCompile Include="src\RealPoint.cpp" />
     <ClCompile Include="src\Triangle.cpp" />
     <ClCompile Include="src\Triangulation.cpp" />
   </ItemGroup>

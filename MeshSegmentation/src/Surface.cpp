@@ -1,10 +1,6 @@
 ﻿#include "Surface.h"
 #include "Utilities.h"
-#include <unordered_set>
-
-#define PLANAR_TOLERANCE 0.0872665
-#define SPHERICAL_TOLERANCE 0.174533
-#define CYLINDRICAL_TOLERANCE 0.1
+#define TOLERANCE 0.0000001
 
 Surface::Surface()
 {
@@ -16,62 +12,63 @@ Surface::~Surface()
 
 }
 
-void Surface::segmentTriangles(Triangulation& triangulation)
+void Surface::getPlanarSurfaces(Triangulation& inputTriangulation)
 {
-    std::unordered_set<int> visited;
-    Utilities utils;
-
-    for (int i = 0; i < triangulation.Triangles.size(); i++) {
-        if (visited.find(i) != visited.end()) continue;
-
-        Geometry::Triangulation currentSurface;
-        currentSurface.UniqueNumbers = triangulation.UniqueNumbers;
-
-        const Point& normal1 = triangulation.Triangles[i].Normal();
-        bool isPlanar = true;
-
-        for (int j = i + 1; j < triangulation.Triangles.size(); j++) {
-            if (visited.find(j) != visited.end()) continue;
-
-            const Point& normal2 = triangulation.Triangles[j].Normal();
-            double angle = utils.getAngle(normal1, normal2, triangulation);
-
-            if (angle < PLANAR_TOLERANCE) {
-                currentSurface.Triangles.push_back(triangulation.Triangles[j]);
-                visited.insert(j);
-                setColor(j, "red");
-            }
-            else if (angle < SPHERICAL_TOLERANCE) {
-                bool isCylindricalSurface = isCylindrical(triangulation.Triangles[i].P1(), triangulation.Triangles[j].P1(), triangulation);
-
-                if (isCylindricalSurface) {
-                    currentSurface.Triangles.push_back(triangulation.Triangles[j]);
-                    visited.insert(j);
-                    setColor(j, "blue");
-                }
-                else {
-                    currentSurface.Triangles.push_back(triangulation.Triangles[j]);
-                    visited.insert(j);
-                    setColor(j, "green");
-                }
-            }
-        }
-
-        if (currentSurface.Triangles.size() > 1) {
-            segmentedSurfaces.push_back(currentSurface);
-        }
-    }
+	std::vector<bool> grouped(inputTriangulation.Triangles.size(), false);
+	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
+		if (grouped[i]) continue;
+		Triangulation currentTriangulation;
+		Point n1 = inputTriangulation.Triangles[i].Normal();
+		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
+		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
+		grouped[i] = true;
+		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
+			if (grouped[j]) {
+				continue;
+			}
+			Point n2 = inputTriangulation.Triangles[j].Normal();
+			
+			if (fabs(Utilities::getAngle(n1, n2, inputTriangulation)) < TOLERANCE) {
+				currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
+				grouped[j] = true;
+			}
+		}
+		if(currentTriangulation.Triangles.size()>1)
+			planarSurfaces.push_back(currentTriangulation);
+	}
 }
 
-bool Surface::isCylindrical(const Point& p1, const Point& p2, const Triangulation& triangulation)
+void Surface::getCylindricalSurfaces(Triangulation& inputTriangulation)
 {
-    double dist = sqrt(pow(triangulation.UniqueNumbers[p1.X()] - triangulation.UniqueNumbers[p2.X()], 2) +
-        pow(triangulation.UniqueNumbers[p1.Y()] - triangulation.UniqueNumbers[p2.Y()], 2) +
-        pow(triangulation.UniqueNumbers[p1.Z()] - triangulation.UniqueNumbers[p2.Z()], 2));
-    return dist < CYLINDRICAL_TOLERANCE;
+
 }
 
-void Surface::setColor(int triangleIndex, const std::string& color)
+void Surface::getSphericalSurfaces(Triangulation& inputTriangulation)
 {
-    triangleColors[triangleIndex] = color;
+	std::vector<bool> grouped(inputTriangulation.Triangles.size(), false);
+	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
+		std::vector<double> centrePoint;
+		if (grouped[i]) continue;
+		Triangulation currentTriangulation;
+		Point n1 = inputTriangulation.Triangles[i].Normal();
+		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
+		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
+		grouped[i] = true;
+		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
+			if (grouped[j]) {
+				continue;
+			}
+			Point n2 = inputTriangulation.Triangles[j].Normal();
+			if (fabs(Utilities::getAngle(n1, n2, inputTriangulation)) > TOLERANCE) {
+				Utilities::intersection(n1, n2, inputTriangulation);
+				
+
+
+				currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
+				grouped[j] = true;
+			}
+		}
+		if (currentTriangulation.Triangles.size() > 1)
+			planarSurfaces.push_back(currentTriangulation);
+	}
 }
