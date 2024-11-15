@@ -16,63 +16,29 @@ Surface::~Surface()
 
 void Surface::getPlanarSurfaces(Triangulation& inputTriangulation)
 {
-	std::vector<bool> grouped(inputTriangulation.Triangles.size(), false);
 	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
-		if (grouped[i]) continue;
 		Triangulation currentTriangulation;
 		const RealPoint n1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
-		//inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
-		grouped[i] = true;
+		
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-			if (grouped[j]) {
-				continue;
-			}
 			const RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
 			
 			if (fabs(Utilities::getAngle(n1, n2)) < TOLERANCE) {
 				currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
-				//inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);
-				grouped[j] = true;
+				inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);
+				j--;
 			}
 		}
 		if (currentTriangulation.Triangles.size() > 1) {
+			inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
+			i--;
 			planarSurfaces.push_back(currentTriangulation);
 		}
-		/*else {
-			inputTriangulation.Triangles.push_back(planarSurfaces[0].Triangles[0]);
-		}*/
+	
 	}
 }
-
-//void Surface::getPlanarSurfaces(Triangulation& inputTriangulation)
-//{
-//	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
-//		Triangulation currentTriangulation;
-//		const RealPoint n1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
-//		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
-//		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
-//		inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
-//		i--;
-//		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-//			const RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
-//			
-//			if (fabs(Utilities::getAngle(n1, n2)) < TOLERANCE) {
-//				currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
-//				inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);
-//				j--;
-//			}
-//		}
-//		if (currentTriangulation.Triangles.size() > 1) {
-//			planarSurfaces.push_back(currentTriangulation);
-//		}
-//		else {
-//			inputTriangulation.Triangles.push_back(currentTriangulation.Triangles[0]);
-//			i++;
-//		}
-//	}
-//}
 
 void Surface::getCylindricalSurfaces(Triangulation& inputTriangulation)
 {
@@ -87,8 +53,6 @@ void Surface::getCylindricalSurfaces(Triangulation& inputTriangulation)
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
-		inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
-		i--;
 
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
 			RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()],
@@ -110,11 +74,10 @@ void Surface::getCylindricalSurfaces(Triangulation& inputTriangulation)
 				}
 			}
 		}
-		if (currentTriangulation.Triangles.size() > 1)
+		if (currentTriangulation.Triangles.size() > 1) {
+			inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
+			i--;
 			cylindricalSurfaces.push_back(currentTriangulation);
-		else {
-			inputTriangulation.Triangles.push_back(currentTriangulation.Triangles[0]);
-			i++;
 		}
 	}
 }
@@ -135,8 +98,7 @@ void Surface::getSphericalSurfaces(Triangulation& inputTriangulation)
 			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
-		inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
-		i--;
+	
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
 			RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
 			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
@@ -157,11 +119,12 @@ void Surface::getSphericalSurfaces(Triangulation& inputTriangulation)
 			}
 		}
 		if (currentTriangulation.Triangles.size() > 1)
+		{
+			inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
+			i--;
 			sphericalSurfaces.push_back(currentTriangulation);
-		else {
-			inputTriangulation.Triangles.push_back(currentTriangulation.Triangles[0]);
-			i++;
 		}
+		
 
 	}
 }
