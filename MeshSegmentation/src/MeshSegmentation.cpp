@@ -22,6 +22,7 @@ void MeshSegmentation::setupUi()
     segment = new QPushButton("Segment", this);
     openglWidget = new OpenGlWidget(this);
     openglWidgetOutput = new OpenGlWidget(this);
+    graphicSync = new GraphicsSynchronizer(openglWidget, openglWidgetOutput);
 
     QGridLayout* layout = new QGridLayout(this);
 

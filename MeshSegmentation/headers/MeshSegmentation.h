@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QPushButton>
 #include "OpenglWidget.h"
+#include "GraphicsSynchronizer.h"
 using namespace Geometry;
 
 class MeshSegmentation : public QMainWindow
@@ -29,6 +30,8 @@ private:
 
     Triangulation inputTriangulation;
     QString inputFilePath;
+
+    GraphicsSynchronizer* graphicSync;
 
     void loadSTLFile(const QString& filePath, Triangulation& inputTriangulation, OpenGlWidget* openglwidget);
 };

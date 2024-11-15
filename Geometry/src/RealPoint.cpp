@@ -48,13 +48,6 @@ void RealPoint::assign(RealPoint& other)
 	mZ = other.mZ;
 }
 
-//void RealPoint::assign(Point& other, Triangulation& triangulation)
-//{
-//	mX = triangulation.UniqueNumbers[other.X()];
-//	mY = triangulation.UniqueNumbers[other.Y()];
-//	mZ = triangulation.UniqueNumbers[other.Z()];
-//}
-
 RealPoint RealPoint::operator*(double scalar) const {
 	return RealPoint(mX * scalar, mY * scalar, mZ * scalar);
 }

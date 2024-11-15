@@ -97,6 +97,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Boundary.cpp" />
+    <ClCompile Include="src\GraphicsSynchronizer.cpp" />
     <ClCompile Include="src\MeshSegmentation.cpp" />
     <ClCompile Include="src\OpenglWidget.cpp" />
     <ClCompile Include="src\Surface.cpp" />
@@ -106,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\Boundary.h" />
+    <QtMoc Include="headers\GraphicsSynchronizer.h" />
     <ClInclude Include="headers\Utilities.h" />
     <QtMoc Include="headers\OpenglWidget.h" />
     <QtMoc Include="headers\MeshSegmentation.h" />
