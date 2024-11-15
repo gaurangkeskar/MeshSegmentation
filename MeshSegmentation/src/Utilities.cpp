@@ -75,10 +75,20 @@ bool Utilities::findIntersection(RealPoint& P1, RealPoint& n1, RealPoint& P2, Re
     return false;
 }
 
-RealPoint Utilities::crossProduct(const Point& n1, const Point& n2, const Triangulation& triangulation)
+RealPoint Utilities::crossProduct(const RealPoint& n1, const RealPoint& n2)
 {
-	double x = triangulation.UniqueNumbers[n2.Z()] * triangulation.UniqueNumbers[n1.Y()] - triangulation.UniqueNumbers[n1.Z()] * triangulation.UniqueNumbers[n2.Y()];
-	double y = triangulation.UniqueNumbers[n2.Z()] * triangulation.UniqueNumbers[n1.X()] - triangulation.UniqueNumbers[n1.Z()] * triangulation.UniqueNumbers[n2.X()];
-	double z = triangulation.UniqueNumbers[n2.Y()] * triangulation.UniqueNumbers[n1.X()] - triangulation.UniqueNumbers[n2.X()] * triangulation.UniqueNumbers[n1.Y()];
+	double x = n2.Z() * n1.Y() - n1.Z() * n2.Y();
+	double y = n2.Z() * n1.X() - n1.Z() * n2.X();
+	double z = n2.Y() * n1.X() - n2.X() * n1.Y();
 	return RealPoint(x, -y, z);
+}
+
+void Utilities::normalize(RealPoint& p1)
+{
+    
+    double x = p1.X() / magnitude(p1);
+    double y = p1.Y() / magnitude(p1);
+    double z = p1.Z() / magnitude(p1);
+    RealPoint temp(x,y,z);
+    p1.assign(temp);
 }
