@@ -1,7 +1,7 @@
 #include "Utilities.h"
 #include <cmath>
 
-#define EPSILON 1e-6
+#define TOLERANCE 1e-6
 
 Utilities::Utilities()
 {
@@ -50,14 +50,6 @@ bool Utilities::findIntersection(RealPoint& P1, RealPoint& n1, RealPoint& P2, Re
 
     double detA = A11 * A22 - A12 * A21;
 
-    if (fabs(detA) < EPSILON) {
-        if (fabs(b1 * A22 - b2 * A12) > EPSILON || fabs(A11 * b2 - A21 * b1) > EPSILON) {
-            return false;
-        }
-        intersection.assign(P1);
-        return true;
-    }
-
     double detT = b1 * A22 - b2 * A12;
     double detS = A11 * b2 - A21 * b1;
 
@@ -68,7 +60,7 @@ bool Utilities::findIntersection(RealPoint& P1, RealPoint& n1, RealPoint& P2, Re
 
     RealPoint checkPoint = P2 + n2 * s;
 
-    if ((intersection - checkPoint).X() < EPSILON && (intersection - checkPoint).Y() < EPSILON && (intersection - checkPoint).Z() < EPSILON) {
+    if ((intersection - checkPoint).X() < TOLERANCE && (intersection - checkPoint).Y() < TOLERANCE && (intersection - checkPoint).Z() < TOLERANCE) {
         return true;
     }
 

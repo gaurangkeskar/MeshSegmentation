@@ -56,8 +56,9 @@ void MeshSegmentation::onSegmentation()
     Surface surface;
 
     surface.getPlanarSurfaces(inputTriangulation);
-    surface.getCylindricalSurfaces(inputTriangulation);
     surface.getSphericalSurfaces(inputTriangulation);
+    surface.getCylindricalSurfaces(inputTriangulation);
+
     OpenGlWidget::Data data;
     for (int i = 0; i < surface.planarSurfaces.size(); i++) {
         Triangulation triangulation = surface.planarSurfaces[i];
