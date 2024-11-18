@@ -18,17 +18,35 @@ void Surface::getPlanarSurfaces(Triangulation& inputTriangulation)
 {
 	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
 		Triangulation currentTriangulation;
-		const RealPoint n1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
+
+		RealPoint p1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().X()],
+			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().Y()],
+			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().Z()]);
+
+		const RealPoint n1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().X()], 
+			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Y()], 
+			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
+
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
 		
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-			const RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
+			const RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()], 
+				inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()],
+				inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
 			
 			if (fabs(Utilities::getAngle(n1, n2)) < TOLERANCE) {
-				currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
-				inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);
-				j--;
+				RealPoint p2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().X()],
+					inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Y()],
+					inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Z()]);
+
+				RealPoint v = p2 - p1;
+
+				if (Utilities::dotProduct(n1, v) < THRESHOLD) {
+					currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
+					inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);
+					j--;
+				}
 			}
 		}
 		if (currentTriangulation.Triangles.size() > 1) {
@@ -93,16 +111,22 @@ void Surface::getSphericalSurfaces(Triangulation& inputTriangulation)
 		RealPoint p1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().X()], 
 					inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().Y()], 
 					inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().Z()]);
+
 		RealPoint n1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().X()], 
 			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Y()], 
 			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
+
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
 	
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-			RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
+			RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()], 
+				inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()], 
+				inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
 			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
-				RealPoint p2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().X()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Y()], inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Z()]);
+				RealPoint p2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().X()], 
+					inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Y()], 
+					inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Z()]);
 
 				RealPoint tempIntersection(0, 0, 0);
 				if (Utilities::findIntersection(p1, n1, p2, n2, tempIntersection)) {
