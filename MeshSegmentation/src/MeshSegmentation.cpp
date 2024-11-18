@@ -11,6 +11,9 @@ MeshSegmentation::MeshSegmentation(QWidget* parent)
     setupUi();
     connect(loadFile, &QPushButton::clicked, this, &MeshSegmentation::onLoadFileClick);
     connect(segment, &QPushButton::clicked, this, &MeshSegmentation::onSegmentation);
+    connect(planarCheckbox, &QCheckBox::toggled, this, &MeshSegmentation::onPlanarClick);
+    connect(sphericalCheckbox, &QCheckBox::toggled, this, &MeshSegmentation::onSphericalClick);
+    connect(cylindricalCheckbox, &QCheckBox::toggled, this, &MeshSegmentation::onCylindricalClick);
 }
 
 MeshSegmentation::~MeshSegmentation()
@@ -23,14 +26,21 @@ void MeshSegmentation::setupUi()
     openglWidget = new OpenGlWidget(this);
     openglWidgetOutput = new OpenGlWidget(this);
     graphicSync = new GraphicsSynchronizer(openglWidget, openglWidgetOutput);
+    planarCheckbox = new QCheckBox("Planar Surfaces", this);
+    sphericalCheckbox = new QCheckBox("Spherical Surfaces", this);
+    cylindricalCheckbox = new QCheckBox("Cylindrical Surfaces", this);
 
     QGridLayout* layout = new QGridLayout(this);
 
-    layout->addWidget(loadFile, 0, 0);
-    layout->addWidget(segment, 0, 1);
-    layout->addWidget(openglWidget, 1, 0);
-    layout->addWidget(openglWidgetOutput, 1, 1);
+    layout->addWidget(loadFile, 0, 0, 1, 3);
+    layout->addWidget(segment, 0, 3, 1, 3);
 
+    layout->addWidget(planarCheckbox, 1, 0, 1, 1);
+    layout->addWidget(cylindricalCheckbox, 1, 1, 1, 1);
+    layout->addWidget(sphericalCheckbox, 1, 2, 1, 1);
+    layout->addWidget(openglWidget, 2, 0, 1, 3);
+    layout->addWidget(openglWidgetOutput, 2, 3, 1, 3);
+ 
 
     QWidget* centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
@@ -56,23 +66,48 @@ void MeshSegmentation::onSegmentation()
     Surface surface;
 
     surface.getPlanarSurfaces(inputTriangulation);
-    surface.getCylindricalSurfaces(inputTriangulation);
     surface.getSphericalSurfaces(inputTriangulation);
+    surface.getCylindricalSurfaces(inputTriangulation);
 
     OpenGlWidget::Data data;
-    for (int i = 0; i < surface.planarSurfaces.size(); i++) {
-        Triangulation triangulation = surface.planarSurfaces[i];
-        convertTriangulationToGraphicsObject(triangulation, data);
+    if (showPlanar) {
+        for (int i = 0; i < surface.planarSurfaces.size(); i++) {
+            Triangulation triangulation = surface.planarSurfaces[i];
+            convertTriangulationToGraphicsObject(triangulation, data);
+        }
     }
-    for (int i = 0; i < surface.cylindricalSurfaces.size(); i++) {
-        Triangulation triangulation = surface.cylindricalSurfaces[i];
-        convertTriangulationToGraphicsObject(triangulation, data);
+
+
+    if (showCylindrical) {
+        for (int i = 0; i < surface.cylindricalSurfaces.size(); i++) {
+            Triangulation triangulation = surface.cylindricalSurfaces[i];
+            convertTriangulationToGraphicsObject(triangulation, data);
+        }
     }
-    for (int i = 0; i < surface.sphericalSurfaces.size(); i++) {
-        Triangulation triangulation = surface.sphericalSurfaces[i];
-        convertTriangulationToGraphicsObject(triangulation, data);
+
+
+    if (showSpherical) {
+        for (int i = 0; i < surface.sphericalSurfaces.size(); i++) {
+            Triangulation triangulation = surface.sphericalSurfaces[i];
+            convertTriangulationToGraphicsObject(triangulation, data);
+        }
     }
     openglWidgetOutput->setData(data);
+}
+
+void MeshSegmentation::onPlanarClick()
+{
+    showPlanar = true;
+}
+
+void MeshSegmentation::onCylindricalClick()
+{
+    showCylindrical = true;
+}
+
+void MeshSegmentation::onSphericalClick()
+{
+    showSpherical = true;
 }
 
 void MeshSegmentation::loadSTLFile(const QString& filePath, Triangulation& inputTriangulation, OpenGlWidget* openglWidget)

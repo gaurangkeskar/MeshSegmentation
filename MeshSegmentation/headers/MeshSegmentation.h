@@ -2,6 +2,8 @@
 #include "Triangulation.h"
 #include <QtWidgets/QMainWindow>
 #include <QPushButton>
+#include <QCheckBox>
+
 #include "OpenglWidget.h"
 #include "GraphicsSynchronizer.h"
 using namespace Geometry;
@@ -17,13 +19,23 @@ public:
 private slots:
     void onLoadFileClick();
     void onSegmentation();
+    void onPlanarClick();
+    void onCylindricalClick();
+    void onSphericalClick();
 
 private:
+    bool showPlanar = false;
+    bool showCylindrical = false;
+    bool showSpherical = false;
+
     void setupUi();
     void convertTriangulationToGraphicsObject(const Triangulation& inputTriangulation, OpenGlWidget::Data&);
 
     QPushButton* loadFile;
     QPushButton* segment;
+    QCheckBox* planarCheckbox;
+    QCheckBox* cylindricalCheckbox;
+    QCheckBox* sphericalCheckbox;
 
     OpenGlWidget* openglWidget;
     OpenGlWidget* openglWidgetOutput;
