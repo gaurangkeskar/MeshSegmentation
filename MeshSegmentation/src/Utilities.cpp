@@ -13,7 +13,7 @@ Utilities::~Utilities()
 
 double Utilities::dotProduct(const RealPoint& p1, const RealPoint& p2)
 {
-
+    // Dot product formula: p1.X() * p2.X() + p1.Y() * p2.Y() + p1.Z() * p2.Z()
     double x = p1.X() * p2.X();
 	double y = p1.Y() * p2.Y();
 	double z = p1.Z() * p2.Z();
@@ -22,7 +22,7 @@ double Utilities::dotProduct(const RealPoint& p1, const RealPoint& p2)
 
 double Utilities::magnitude(const RealPoint& p1)
 {
-
+    // Magnitude formula: sqrt(p1.X()^2 + p1.Y()^2 + p1.Z()^2)
 	double x = pow(p1.X(), 2);
 	double y = pow(p1.Y(), 2);
 	double z = pow(p1.Z(), 2);
@@ -32,10 +32,12 @@ double Utilities::magnitude(const RealPoint& p1)
 
 double Utilities::getAngle(const RealPoint& n1, const RealPoint& n2)
 {
+    // Cosine of the angle between two vectors: dotProduct(n1, n2) / (magnitude(n1) * magnitude(n2))
     double cosine = dotProduct(n1, n2) / (magnitude(n1) * magnitude(n2));
+    // Ensure the cosine value is within the valid range [-1, 1] to avoid domain errors in acos
     cosine = std::min(1.0, std::max(-1.0, cosine));
-    double angle = acos(cosine);
-	return angle;
+    return acos(cosine);
+	
 }
 
 bool Utilities::findIntersection(RealPoint& P1, RealPoint& n1, RealPoint& P2, RealPoint& n2,  RealPoint& intersection)

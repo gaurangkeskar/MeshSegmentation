@@ -31,10 +31,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Surface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Boundary.cpp">
+    <ClCompile Include="src\Segment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\MeshSegmentation.cpp">
@@ -49,15 +46,18 @@
     <ClCompile Include="src\GraphicsSynchronizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Segmenter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\Surface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\Boundary.h">
+    <ClInclude Include="headers\Segment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\Utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\Segmenter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

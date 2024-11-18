@@ -2,7 +2,8 @@
 #include <QFileDialog>
 #include <QGridLayout>
 #include "STLReader.h"
-#include "Surface.h"
+#include "Segment.h"
+#include "Segmenter.h"
 using namespace MeshReader;
 
 MeshSegmentation::MeshSegmentation(QWidget* parent)
@@ -63,32 +64,34 @@ void MeshSegmentation::onLoadFileClick()
 
 void MeshSegmentation::onSegmentation()
 {
-    Surface surface;
+    Segment segment;
+    Segmenter segmenter;
 
-    surface.getPlanarSurfaces(inputTriangulation);
-    surface.getSphericalSurfaces(inputTriangulation);
-    surface.getCylindricalSurfaces(inputTriangulation);
+    
+    segmenter.processPlanarSurfaces(inputTriangulation, segment);
+    segmenter.processSphericalSurfaces(inputTriangulation, segment);
+    segmenter.processCylindricalSurfaces(inputTriangulation, segment);
 
     OpenGlWidget::Data data;
     if (showPlanar) {
-        for (int i = 0; i < surface.planarSurfaces.size(); i++) {
-            Triangulation triangulation = surface.planarSurfaces[i];
+        for (int i = 0; i < segment.planarSurfaces.size(); i++) {
+            Triangulation triangulation = segment.planarSurfaces[i];
             convertTriangulationToGraphicsObject(triangulation, data);
         }
     }
 
 
     if (showCylindrical) {
-        for (int i = 0; i < surface.cylindricalSurfaces.size(); i++) {
-            Triangulation triangulation = surface.cylindricalSurfaces[i];
+        for (int i = 0; i < segment.cylindricalSurfaces.size(); i++) {
+            Triangulation triangulation = segment.cylindricalSurfaces[i];
             convertTriangulationToGraphicsObject(triangulation, data);
         }
     }
 
 
     if (showSpherical) {
-        for (int i = 0; i < surface.sphericalSurfaces.size(); i++) {
-            Triangulation triangulation = surface.sphericalSurfaces[i];
+        for (int i = 0; i < segment.sphericalSurfaces.size(); i++) {
+            Triangulation triangulation = segment.sphericalSurfaces[i];
             convertTriangulationToGraphicsObject(triangulation, data);
         }
     }

@@ -96,22 +96,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Boundary.cpp" />
     <ClCompile Include="src\GraphicsSynchronizer.cpp" />
     <ClCompile Include="src\MeshSegmentation.cpp" />
     <ClCompile Include="src\OpenglWidget.cpp" />
-    <ClCompile Include="src\Surface.cpp" />
+    <ClCompile Include="src\Segmenter.cpp" />
+    <ClCompile Include="src\Segment.cpp" />
     <ClCompile Include="src\Utilities.cpp" />
     <QtRcc Include="MeshSegmentation.qrc" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\Boundary.h" />
     <QtMoc Include="headers\GraphicsSynchronizer.h" />
+    <ClInclude Include="headers\Segmenter.h" />
     <ClInclude Include="headers\Utilities.h" />
     <QtMoc Include="headers\OpenglWidget.h" />
     <QtMoc Include="headers\MeshSegmentation.h" />
-    <ClInclude Include="headers\Surface.h" />
+    <ClInclude Include="headers\Segment.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
