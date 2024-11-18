@@ -40,7 +40,7 @@ double Utilities::getAngle(const RealPoint& n1, const RealPoint& n2)
 	
 }
 
-bool Utilities::findIntersection(RealPoint& P1, RealPoint& n1, RealPoint& P2, RealPoint& n2,  RealPoint& intersection)
+bool Utilities::findIntersection(const RealPoint& P1, const RealPoint& n1, const RealPoint& P2, const RealPoint& n2,  RealPoint& intersection)
 {
     double A11 = n1.X(), A12 = -n2.X();
     double A21 = n1.Y(), A22 = -n2.Y();

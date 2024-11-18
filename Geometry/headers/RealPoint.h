@@ -11,6 +11,7 @@ class RealPoint
 
 public:
 	RealPoint(double x, double y, double z);
+	RealPoint(Point p, Triangulation& triangulation);
 	~RealPoint();
 
 	double X() const;

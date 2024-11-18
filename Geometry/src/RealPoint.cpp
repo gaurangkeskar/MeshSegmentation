@@ -5,6 +5,13 @@ RealPoint::RealPoint(double x, double y, double z)
 {
 }
 
+RealPoint::RealPoint(Point p, Triangulation& triangulation)
+{
+	mX = triangulation.UniqueNumbers[p.X()];
+	mY = triangulation.UniqueNumbers[p.Y()];
+	mZ = triangulation.UniqueNumbers[p.Z()];
+}
+
 RealPoint::~RealPoint()
 {
 	

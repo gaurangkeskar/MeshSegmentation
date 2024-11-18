@@ -10,26 +10,18 @@ void Segmenter::processPlanarSurfaces(Triangulation& inputTriangulation, Segment
 	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
 		Triangulation currentTriangulation;
 
-		RealPoint p1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().X()],
-			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().Y()],
-			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().Z()]);
+		const RealPoint p1(inputTriangulation.Triangles[i].P1(), inputTriangulation);
 
-		const RealPoint n1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().X()],
-			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Y()],
-			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
+		const RealPoint n1(inputTriangulation.Triangles[i].Normal(), inputTriangulation);
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
 
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-			const RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()],
-				inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()],
-				inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
+			const RealPoint n2(inputTriangulation.Triangles[j].Normal(), inputTriangulation);
 
 			if (fabs(Utilities::getAngle(n1, n2)) < TOLERANCE) {
-				RealPoint p2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().X()],
-					inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Y()],
-					inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Z()]);
+				const RealPoint p2(inputTriangulation.Triangles[j].P2(), inputTriangulation);
 
 				RealPoint v = p2 - p1;
 
@@ -56,17 +48,13 @@ void Segmenter::processCylindricalSurfaces(Triangulation& inputTriangulation, Se
 		Triangulation currentTriangulation;
 		RealPoint intersectionAxis(0, 0, 0);
 
-		RealPoint n1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().X()],
-			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Y()],
-			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
+		const RealPoint n1(inputTriangulation.Triangles[i].Normal(), inputTriangulation);
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
 
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-			RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()],
-				inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()],
-				inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
+			const RealPoint n2(inputTriangulation.Triangles[j].Normal(), inputTriangulation);
 
 			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
 				RealPoint axis = Utilities::crossProduct(n1, n2);
@@ -99,25 +87,18 @@ void Segmenter::processSphericalSurfaces(Triangulation& inputTriangulation, Segm
 		bool flag = false;
 		Triangulation currentTriangulation;
 		RealPoint intersection(0, 0, 0);
-		RealPoint p1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().X()],
-			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().Y()],
-			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].P1().Z()]);
+		const RealPoint p1(inputTriangulation.Triangles[i].P1(), inputTriangulation);
 
-		RealPoint n1(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().X()],
-			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Y()],
-			inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[i].Normal().Z()]);
+		const RealPoint n1(inputTriangulation.Triangles[i].Normal(), inputTriangulation);
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
 
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-			RealPoint n2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().X()],
-				inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Y()],
-				inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].Normal().Z()]);
+			const RealPoint n2(inputTriangulation.Triangles[j].Normal(), inputTriangulation);
+
 			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
-				RealPoint p2(inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().X()],
-					inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Y()],
-					inputTriangulation.UniqueNumbers[inputTriangulation.Triangles[j].P1().Z()]);
+				const RealPoint p2(inputTriangulation.Triangles[j].P2(), inputTriangulation);
 
 				RealPoint tempIntersection(0, 0, 0);
 				if (Utilities::findIntersection(p1, n1, p2, n2, tempIntersection)) {
