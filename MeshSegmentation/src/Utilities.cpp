@@ -42,26 +42,33 @@ double Utilities::getAngle(const RealPoint& n1, const RealPoint& n2)
 
 bool Utilities::findIntersection(const RealPoint& P1, const RealPoint& n1, const RealPoint& P2, const RealPoint& n2,  RealPoint& intersection)
 {
+    // Extract direction components for the first line (n1) and the second line (n2)
     double A11 = n1.X(), A12 = -n2.X();
     double A21 = n1.Y(), A22 = -n2.Y();
     double A31 = n1.Z(), A32 = -n2.Z();
 
+    // Compute the difference in position vectors between the two points P1 and P2
     double b1 = P2.X() - P1.X();
     double b2 = P2.Y() - P1.Y();
     double b3 = P2.Z() - P1.Z();
 
+    // Calculate the determinant of the coefficient matrix A
     double detA = A11 * A22 - A12 * A21;
 
+    // Compute the determinants for t and s using the b vector and coefficient matrix A
     double detT = b1 * A22 - b2 * A12;
     double detS = A11 * b2 - A21 * b1;
 
     double t = detT / detA;
     double s = detS / detA;
 
+    // Compute the intersection point by applying the parameter t to the first line (P1 + t * n1)
     intersection = P1 + n1 * t;
 
+    // Compute a point on the second line using parameter s
     RealPoint checkPoint = P2 + n2 * s;
 
+    // Check if the two computed points (intersection and checkPoint) are close enough
     if ((intersection - checkPoint).X() < TOLERANCE && (intersection - checkPoint).Y() < TOLERANCE && (intersection - checkPoint).Z() < TOLERANCE) {
         return true;
     }
@@ -71,6 +78,7 @@ bool Utilities::findIntersection(const RealPoint& P1, const RealPoint& n1, const
 
 RealPoint Utilities::crossProduct(const RealPoint& n1, const RealPoint& n2)
 {
+    // Cross product formula: (n2.Z() * n1.Y() - n1.Z() * n2.Y(), n2.Z() * n1.X() - n1.Z() * n2.X(), n2.Y() * n1.X() - n2.X() * n1.Y())
 	double x = n2.Z() * n1.Y() - n1.Z() * n2.Y();
 	double y = n2.Z() * n1.X() - n1.Z() * n2.X();
 	double z = n2.Y() * n1.X() - n2.X() * n1.Y();
@@ -79,7 +87,7 @@ RealPoint Utilities::crossProduct(const RealPoint& n1, const RealPoint& n2)
 
 void Utilities::normalize(RealPoint& p1)
 {
-    
+    // Normalize the vector by dividing each component by the magnitude   
     double x = p1.X() / magnitude(p1);
     double y = p1.Y() / magnitude(p1);
     double z = p1.Z() / magnitude(p1);
