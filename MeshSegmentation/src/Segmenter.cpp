@@ -20,18 +20,21 @@ void Segmenter::processPlanarSurfaces(Triangulation& inputTriangulation, Segment
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
 			const RealPoint n2(inputTriangulation.Triangles[j].Normal(), inputTriangulation);
 
+			// Check if the angle between the normals is very small
 			if (fabs(Utilities::getAngle(n1, n2)) < TOLERANCE) {
 				const RealPoint p2(inputTriangulation.Triangles[j].P2(), inputTriangulation);
 
 				RealPoint v = p2 - p1;
 
-				if (Utilities::dotProduct(n1, v) < THRESHOLD) {
-					currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
-					inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);
-					j--;
-				}
+				currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
+
+				//Delete from main triangulation to avoid extra processing
+				inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);
+				j--;
 			}
 		}
+
+		//Check if there are more than 1 Triangles
 		if (currentTriangulation.Triangles.size() > 1) {
 			inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
 			i--;
@@ -57,8 +60,11 @@ void Segmenter::processCylindricalSurfaces(Triangulation& inputTriangulation, Se
 			const RealPoint n2(inputTriangulation.Triangles[j].Normal(), inputTriangulation);
 
 			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
+
+				//Get axis via cross product
 				RealPoint axis = Utilities::crossProduct(n1, n2);
 
+				//Check for first iteration
 				if (!flag) {
 					intersectionAxis.assign(axis);
 					flag = true;
@@ -101,11 +107,17 @@ void Segmenter::processSphericalSurfaces(Triangulation& inputTriangulation, Segm
 				const RealPoint p2(inputTriangulation.Triangles[j].P2(), inputTriangulation);
 
 				RealPoint tempIntersection(0, 0, 0);
+
+				// Find intersection Point
 				if (Utilities::findIntersection(p1, n1, p2, n2, tempIntersection)) {
+
+					//Check for first iteration
 					if (!flag) {
 						intersection.assign(tempIntersection);
 						flag = true;
 					}
+
+					//Compare the intersection point
 					if (intersection == tempIntersection) {
 						currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
 						inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);
