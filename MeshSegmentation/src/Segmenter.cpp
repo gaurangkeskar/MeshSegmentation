@@ -15,7 +15,7 @@ void Segmenter::processPlanarSurfaces(Triangulation& inputTriangulation, Segment
 		const RealPoint n1(inputTriangulation.Triangles[i].Normal(), inputTriangulation);
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
-		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
+		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]); 
 
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
 			const RealPoint n2(inputTriangulation.Triangles[j].Normal(), inputTriangulation);

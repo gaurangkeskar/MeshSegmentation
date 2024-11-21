@@ -5,10 +5,6 @@ using namespace Geometry;
 
 class RealPoint
 {
-	double mX;
-	double mY;
-	double mZ;
-
 public:
 	RealPoint(double x, double y, double z);
 	RealPoint(Point p, Triangulation& triangulation);
@@ -23,6 +19,11 @@ public:
 	RealPoint operator+(const RealPoint& other) const;
 	void assign(RealPoint& other);
 	RealPoint operator*(double scalar) const;
+
+private:
+	double mX;
+	double mY;
+	double mZ;
 };
 
 

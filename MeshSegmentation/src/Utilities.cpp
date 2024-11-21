@@ -80,9 +80,9 @@ RealPoint Utilities::crossProduct(const RealPoint& n1, const RealPoint& n2)
 {
     // Cross product formula: (n2.Z() * n1.Y() - n1.Z() * n2.Y(), n2.Z() * n1.X() - n1.Z() * n2.X(), n2.Y() * n1.X() - n2.X() * n1.Y())
 	double x = n2.Z() * n1.Y() - n1.Z() * n2.Y();
-	double y = n2.Z() * n1.X() - n1.Z() * n2.X();
+	double y = n1.Z() * n2.X() - n2.Z() * n1.X();
 	double z = n2.Y() * n1.X() - n2.X() * n1.Y();
-	return RealPoint(x, -y, z);
+	return RealPoint(x, y, z);
 }
 
 void Utilities::normalize(RealPoint& p1)
