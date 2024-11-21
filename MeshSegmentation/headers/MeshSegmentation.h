@@ -29,7 +29,8 @@ private:
     bool showSpherical = false;
 
     void setupUi();
-    void convertTriangulationToGraphicsObject(const Triangulation& inputTriangulation, OpenGlWidget::Data&);
+    void convertTriangulationToGraphicsObject(const Triangulation& inputTriangulation, QVector<OpenGlWidget::Data>&, float clr[3]);
+    void convertTriangulationToGraphicsObject(const Triangulation& inputTriangulation, QVector<OpenGlWidget::Data>&);
 
     QPushButton* loadFile;
     QPushButton* segment;

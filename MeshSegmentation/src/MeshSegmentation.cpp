@@ -67,16 +67,19 @@ void MeshSegmentation::onSegmentation()
     Segment segment;
     Segmenter segmenter;
 
+    float red[3] = { 1.0,0.0,0.0 };
+    float green[3] = { 0.0,1.0,0.0 };
+    float blue[3] = { 0.0,0.0,1.0 };
     
     segmenter.processPlanarSurfaces(inputTriangulation, segment);
     segmenter.processSphericalSurfaces(inputTriangulation, segment);
     segmenter.processCylindricalSurfaces(inputTriangulation, segment);
 
-    OpenGlWidget::Data data;
+    QVector<OpenGlWidget::Data> data;
     if (showPlanar) {
         for (int i = 0; i < segment.planarSurfaces.size(); i++) {
             Triangulation triangulation = segment.planarSurfaces[i];
-            convertTriangulationToGraphicsObject(triangulation, data);
+            convertTriangulationToGraphicsObject(triangulation, data, red);
         }
     }
 
@@ -84,7 +87,7 @@ void MeshSegmentation::onSegmentation()
     if (showCylindrical) {
         for (int i = 0; i < segment.cylindricalSurfaces.size(); i++) {
             Triangulation triangulation = segment.cylindricalSurfaces[i];
-            convertTriangulationToGraphicsObject(triangulation, data);
+            convertTriangulationToGraphicsObject(triangulation, data, green);
         }
     }
 
@@ -92,7 +95,7 @@ void MeshSegmentation::onSegmentation()
     if (showSpherical) {
         for (int i = 0; i < segment.sphericalSurfaces.size(); i++) {
             Triangulation triangulation = segment.sphericalSurfaces[i];
-            convertTriangulationToGraphicsObject(triangulation, data);
+            convertTriangulationToGraphicsObject(triangulation, data, blue);
         }
     }
     openglWidgetOutput->setData(data);
@@ -117,31 +120,55 @@ void MeshSegmentation::loadSTLFile(const QString& filePath, Triangulation& input
 {
     STLReader reader;
     reader.read(filePath.toStdString(), inputTriangulation);
-    OpenGlWidget::Data data;
+    QVector<OpenGlWidget::Data> data;
     convertTriangulationToGraphicsObject(inputTriangulation, data);
     openglWidget->setData(data);
 }
 
-void MeshSegmentation::convertTriangulationToGraphicsObject(const Triangulation& triangulation, OpenGlWidget::Data& data)
+void MeshSegmentation::convertTriangulationToGraphicsObject(const Triangulation& triangulation, QVector<OpenGlWidget::Data>& data, float clr[3])
 {
+    OpenGlWidget::Data data1;
     for (const Triangle& triangle : triangulation.Triangles)
     {
+        const Point& normal = triangle.Normal();
         for (const Point& point : triangle.Points())
         {
-            data.vertices.push_back(triangulation.UniqueNumbers[point.X()]);
-            data.vertices.push_back(triangulation.UniqueNumbers[point.Y()]);
-            data.vertices.push_back(triangulation.UniqueNumbers[point.Z()]);
-        }
+            data1.vertices.push_back(triangulation.UniqueNumbers[point.X()]);
+            data1.vertices.push_back(triangulation.UniqueNumbers[point.Y()]);
+            data1.vertices.push_back(triangulation.UniqueNumbers[point.Z()]);
 
-        const Point& normal = triangle.Normal();
+            data1.normals.push_back(triangulation.UniqueNumbers[normal.X()]);
+            data1.normals.push_back(triangulation.UniqueNumbers[normal.Y()]);
+            data1.normals.push_back(triangulation.UniqueNumbers[normal.Z()]);
 
-        for (size_t i = 0; i < 3; i++)
-        {
-            data.normals.push_back(triangulation.UniqueNumbers[normal.X()]);
-            data.normals.push_back(triangulation.UniqueNumbers[normal.Y()]);
-            data.normals.push_back(triangulation.UniqueNumbers[normal.Z()]);
+            data1.colors.push_back(clr[0]);
+            data1.colors.push_back(clr[1]);
+            data1.colors.push_back(clr[2]);
         }
     }
+    data1.drawStyle = OpenGlWidget::LINES;
+    data.push_back(data1);
+    return;
+}
 
+void MeshSegmentation::convertTriangulationToGraphicsObject(const Triangulation& triangulation, QVector<OpenGlWidget::Data>& data)
+{
+    OpenGlWidget::Data data1;
+    for (const Triangle& triangle : triangulation.Triangles)
+    {
+        const Point& normal = triangle.Normal();
+        for (const Point& point : triangle.Points())
+        {
+            data1.vertices.push_back(triangulation.UniqueNumbers[point.X()]);
+            data1.vertices.push_back(triangulation.UniqueNumbers[point.Y()]);
+            data1.vertices.push_back(triangulation.UniqueNumbers[point.Z()]);
+
+            data1.normals.push_back(triangulation.UniqueNumbers[normal.X()]);
+            data1.normals.push_back(triangulation.UniqueNumbers[normal.Y()]);
+            data1.normals.push_back(triangulation.UniqueNumbers[normal.Z()]);
+        }
+    }
+    data1.drawStyle = OpenGlWidget::TRIANGLES;
+    data.push_back(data1);
     return;
 }
