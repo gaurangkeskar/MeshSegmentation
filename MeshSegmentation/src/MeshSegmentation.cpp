@@ -18,7 +18,8 @@ MeshSegmentation::MeshSegmentation(QWidget* parent)
 }
 
 MeshSegmentation::~MeshSegmentation()
-{}
+{
+}
 
 void MeshSegmentation::setupUi()
 {

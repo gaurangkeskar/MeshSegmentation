@@ -1,4 +1,5 @@
 #include "RealPoint.h"
+using namespace Geometry;
 
 RealPoint::RealPoint(double x, double y, double z)
 	:mX(x), mY(y), mZ(z)

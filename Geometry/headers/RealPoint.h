@@ -1,29 +1,28 @@
 #pragma once
 #include "Triangulation.h"
+namespace Geometry {
+	class RealPoint
+	{
+	public:
+		RealPoint(double x, double y, double z);
+		RealPoint(Point p, Triangulation& triangulation);
+		~RealPoint();
 
-using namespace Geometry;
+		double X() const;
+		double Y() const;
+		double Z() const;
 
-class RealPoint
-{
-public:
-	RealPoint(double x, double y, double z);
-	RealPoint(Point p, Triangulation& triangulation);
-	~RealPoint();
+		bool operator==(RealPoint& other);
+		RealPoint operator-(const RealPoint& other) const;
+		RealPoint operator+(const RealPoint& other) const;
+		void assign(RealPoint& other);
+		RealPoint operator*(double scalar) const;
 
-	double X() const;
-	double Y() const;
-	double Z() const;
-
-	bool operator==(RealPoint& other);
-	RealPoint operator-(const RealPoint& other) const;
-	RealPoint operator+(const RealPoint& other) const;
-	void assign(RealPoint& other);
-	RealPoint operator*(double scalar) const;
-
-private:
-	double mX;
-	double mY;
-	double mZ;
-};
+	private:
+		double mX;
+		double mY;
+		double mZ;
+	};
+}
 
 

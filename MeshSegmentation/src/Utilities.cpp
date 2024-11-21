@@ -40,7 +40,7 @@ double Utilities::getAngle(const RealPoint& n1, const RealPoint& n2)
 	
 }
 
-bool Utilities::findIntersection(const RealPoint& P1, const RealPoint& n1, const RealPoint& P2, const RealPoint& n2,  RealPoint& intersection)
+bool Utilities::findIntersection(const RealPoint& p1, const RealPoint& n1, const RealPoint& p2, const RealPoint& n2,  RealPoint& intersection)
 {
     // Extract direction components for the first line (n1) and the second line (n2)
     double A11 = n1.X(), A12 = -n2.X();
@@ -48,9 +48,9 @@ bool Utilities::findIntersection(const RealPoint& P1, const RealPoint& n1, const
     double A31 = n1.Z(), A32 = -n2.Z();
 
     // Compute the difference in position vectors between the two points P1 and P2
-    double b1 = P2.X() - P1.X();
-    double b2 = P2.Y() - P1.Y();
-    double b3 = P2.Z() - P1.Z();
+    double b1 = p2.X() - p1.X();
+    double b2 = p2.Y() - p1.Y();
+    double b3 = p2.Z() - p1.Z();
 
     // Calculate the determinant of the coefficient matrix A
     double detA = A11 * A22 - A12 * A21;
@@ -63,10 +63,10 @@ bool Utilities::findIntersection(const RealPoint& P1, const RealPoint& n1, const
     double s = detS / detA;
 
     // Compute the intersection point by applying the parameter t to the first line (P1 + t * n1)
-    intersection = P1 + n1 * t;
+    intersection = p1 + n1 * t;
 
     // Compute a point on the second line using parameter s
-    RealPoint checkPoint = P2 + n2 * s;
+    RealPoint checkPoint = p2 + n2 * s;
 
     // Check if the two computed points (intersection and checkPoint) are close enough
     if ((intersection - checkPoint).X() < TOLERANCE && (intersection - checkPoint).Y() < TOLERANCE && (intersection - checkPoint).Z() < TOLERANCE) {
