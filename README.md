@@ -7,3 +7,6 @@ Here a cow.stl has been segmented into spherical and planar surfaces.
 
 
 ![image](https://github.com/user-attachments/assets/7ea40971-9c29-423c-b73d-8ae4a496ab77)
+
+
+![image](https://github.com/user-attachments/assets/3babc856-d362-4f2d-a1fb-aef12482806c)
