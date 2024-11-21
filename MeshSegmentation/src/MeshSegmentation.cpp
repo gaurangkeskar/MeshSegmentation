@@ -76,11 +76,12 @@ void MeshSegmentation::onSegmentation()
     segmenter.processSphericalSurfaces(inputTriangulation, segment);
     segmenter.processCylindricalSurfaces(inputTriangulation, segment);
 
-    QVector<OpenGlWidget::Data> data;
     if (showPlanar) {
         for (int i = 0; i < segment.planarSurfaces.size(); i++) {
             Triangulation triangulation = segment.planarSurfaces[i];
-            convertTriangulationToGraphicsObject(triangulation, data, red);
+            OpenGlWidget::Data data= convertTriangulationToGraphicsObject(triangulation, red);
+            data.drawStyle = OpenGlWidget::TRIANGLES;
+            openglWidgetOutput->addObject(data);
         }
     }
 
@@ -88,7 +89,9 @@ void MeshSegmentation::onSegmentation()
     if (showCylindrical) {
         for (int i = 0; i < segment.cylindricalSurfaces.size(); i++) {
             Triangulation triangulation = segment.cylindricalSurfaces[i];
-            convertTriangulationToGraphicsObject(triangulation, data, green);
+            OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, green);
+            data.drawStyle = OpenGlWidget::TRIANGLES;
+            openglWidgetOutput->addObject(data);
         }
     }
 
@@ -96,80 +99,73 @@ void MeshSegmentation::onSegmentation()
     if (showSpherical) {
         for (int i = 0; i < segment.sphericalSurfaces.size(); i++) {
             Triangulation triangulation = segment.sphericalSurfaces[i];
-            convertTriangulationToGraphicsObject(triangulation, data, blue);
+            OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, blue);
+            data.drawStyle = OpenGlWidget::TRIANGLES;
+            openglWidgetOutput->addObject(data);
         }
     }
-    openglWidgetOutput->setData(data);
 }
 
 void MeshSegmentation::onPlanarClick()
 {
-    showPlanar = true;
+    if (showPlanar)
+        showPlanar = false;
+    else
+        showPlanar = true;
 }
 
 void MeshSegmentation::onCylindricalClick()
 {
-    showCylindrical = true;
+    if (showCylindrical)
+        showCylindrical = false;
+    else
+        showCylindrical = true;
 }
 
 void MeshSegmentation::onSphericalClick()
 {
-    showSpherical = true;
+    if (showSpherical)
+        showSpherical = false;
+    else
+        showSpherical = true;
 }
 
 void MeshSegmentation::loadSTLFile(const QString& filePath, Triangulation& inputTriangulation, OpenGlWidget* openglWidget)
 {
+    float white[3] = {1.0,1.0,1.0};
     STLReader reader;
     reader.read(filePath.toStdString(), inputTriangulation);
-    QVector<OpenGlWidget::Data> data;
-    convertTriangulationToGraphicsObject(inputTriangulation, data);
-    openglWidget->setData(data);
+    OpenGlWidget::Data data;
+    data = convertTriangulationToGraphicsObject(inputTriangulation, white);
+    data.drawStyle = OpenGlWidget::TRIANGLES;
+    openglWidget->addObject(data);
 }
 
-void MeshSegmentation::convertTriangulationToGraphicsObject(const Triangulation& triangulation, QVector<OpenGlWidget::Data>& data, float clr[3])
+OpenGlWidget::Data MeshSegmentation::convertTriangulationToGraphicsObject(const Triangulation& triangulation, float clr[3])
 {
-    OpenGlWidget::Data data1;
+    OpenGlWidget::Data data;
     for (const Triangle& triangle : triangulation.Triangles)
     {
         const Point& normal = triangle.Normal();
         for (const Point& point : triangle.Points())
         {
-            data1.vertices.push_back(triangulation.UniqueNumbers[point.X()]);
-            data1.vertices.push_back(triangulation.UniqueNumbers[point.Y()]);
-            data1.vertices.push_back(triangulation.UniqueNumbers[point.Z()]);
-
-            data1.normals.push_back(triangulation.UniqueNumbers[normal.X()]);
-            data1.normals.push_back(triangulation.UniqueNumbers[normal.Y()]);
-            data1.normals.push_back(triangulation.UniqueNumbers[normal.Z()]);
-
-            data1.colors.push_back(clr[0]);
-            data1.colors.push_back(clr[1]);
-            data1.colors.push_back(clr[2]);
+            data.vertices.push_back(triangulation.UniqueNumbers[point.X()]);
+            data.vertices.push_back(triangulation.UniqueNumbers[point.Y()]);
+            data.vertices.push_back(triangulation.UniqueNumbers[point.Z()]);
         }
-    }
-    data1.drawStyle = OpenGlWidget::LINES;
-    data.push_back(data1);
-    return;
-}
 
-void MeshSegmentation::convertTriangulationToGraphicsObject(const Triangulation& triangulation, QVector<OpenGlWidget::Data>& data)
-{
-    OpenGlWidget::Data data1;
-    for (const Triangle& triangle : triangulation.Triangles)
-    {
-        const Point& normal = triangle.Normal();
-        for (const Point& point : triangle.Points())
-        {
-            data1.vertices.push_back(triangulation.UniqueNumbers[point.X()]);
-            data1.vertices.push_back(triangulation.UniqueNumbers[point.Y()]);
-            data1.vertices.push_back(triangulation.UniqueNumbers[point.Z()]);
-
-            data1.normals.push_back(triangulation.UniqueNumbers[normal.X()]);
-            data1.normals.push_back(triangulation.UniqueNumbers[normal.Y()]);
-            data1.normals.push_back(triangulation.UniqueNumbers[normal.Z()]);
+        for (int i = 0; i < 3; i++) {
+            data.normals.push_back(triangulation.UniqueNumbers[normal.X()]);
+            data.normals.push_back(triangulation.UniqueNumbers[normal.Y()]);
+            data.normals.push_back(triangulation.UniqueNumbers[normal.Z()]);
         }
+
+        for (int i = 0; i < 3; i++) {
+            data.colors.push_back(clr[0]);
+            data.colors.push_back(clr[1]);
+            data.colors.push_back(clr[2]);
+        }
+
     }
-    data1.drawStyle = OpenGlWidget::TRIANGLES;
-    data.push_back(data1);
-    return;
+    return data;
 }

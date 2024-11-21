@@ -3,6 +3,8 @@
 #include <QDataStream>
 #include <QDebug>
 
+using namespace std;
+
 OpenGlWidget::OpenGlWidget(QWidget* parent)
     : QOpenGLWidget(parent),
     isInitialized(false)
@@ -13,22 +15,51 @@ OpenGlWidget::~OpenGlWidget() {
     makeCurrent();
     for (DrawingObject drawingObject : drawingObjects)
     {
-        //drawingObject.vao->destroy();
-        //drawingObject.vbo.destroy();
+        drawingObject.vao->destroy();
+        drawingObject.vbo.destroy();
     }
     doneCurrent();
 }
 
-void OpenGlWidget::setData(QVector<Data> inData)
+int OpenGlWidget::addObject(Data inData)
 {
+    int doId = buildDrawingObjects(inData);
+    return doId;
+}
 
-    if (inData.size() > 0)
+void OpenGlWidget::removeObject(int id)
+{
+    makeCurrent();
+    
+    // Find the index of the drawing object with the given id
+    int index = idToIndex.value(id, -1);
+    
+    if (index != -1)
     {
-        data = inData;
-        makeCurrent();
-        initializeGL();
+        // Remove the drawing object from the vector
+        DrawingObject drawingObject = drawingObjects.at(index);
+        drawingObjects.erase(drawingObjects.begin() + index);
+        
+        // Update the idToIndex map
+        idToIndex.remove(id);
+        for (int i = index; i <= drawingObjects.size(); i++)
+        {
+            if(idToIndex.contains(i + 1))
+            {
+                int objectId = idToIndex.key(i);
+                idToIndex[i] = objectId;
+            }
+        }
+        
+        // Destroy the VAO and VBO of the removed drawing object
+        drawingObject.vao->destroy();
+        drawingObject.vbo.destroy();
+        
+        // Update the OpenGL context
         update();
     }
+    
+    doneCurrent();
 }
 
 QSize OpenGlWidget::minimumSizeHint() const
@@ -51,12 +82,9 @@ void OpenGlWidget::sync(float inZoomLevel, QVector3D inRotation, QVector2D inPan
 
 void OpenGlWidget::initializeGL()
 {
-    if (!isInitialized && data.size() > 0 && (data[0].vertices.size() > 0 && data[0].normals.size() > 0))
-    {
-        initializeOpenGLFunctions();
-        glEnable(GL_DEPTH_TEST);
-        createArrayAndBuffers();
-    }
+    initializeOpenGLFunctions();
+    glEnable(GL_DEPTH_TEST);
+    loadShaders();
 }
 
 void OpenGlWidget::resizeGL(int w, int h) {
@@ -75,43 +103,47 @@ void OpenGlWidget::paintGL()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         updateModelViewMatrix();
 
-
         for (DrawingObject drawingObject : drawingObjects)
         {
-            if (drawingObject.drawStyle == DrawStyle::TRIANGLES)
-            {
-                shaderProgram.bind();
-                shaderProgram.setUniformValue("projection", projection);
-                shaderProgram.setUniformValue("modelView", modelView);
+            QOpenGLShaderProgram& shader = (drawingObject.drawStyle == DrawStyle::TRIANGLES) ? shadedShader : wireShader;
 
-                QVector3D lightPos(0.5f, 0.5f, 10.0f);
-                shaderProgram.setUniformValue("lightPos", lightPos);
-                shaderProgram.setUniformValue("viewPos", QVector3D(0.0f, 0.0f, 5.0f));
+            shader.bind();
+            shader.setUniformValue("projection", projection);
+            shader.setUniformValue("modelView", modelView);
 
-                drawingObject.vao->bind();
-                glDrawArrays(GL_TRIANGLES, 0, drawingObject.numVertices);
-                drawingObject.vao->release();
+            QVector3D lightPos(0.5f, 0.5f, 10.0f);
+            shader.setUniformValue("lightPos", lightPos);
+            shader.setUniformValue("viewPos", QVector3D(0.0f, 0.0f, 5.0f));
 
-                shaderProgram.release();
-            }
-            else if (drawingObject.drawStyle == DrawStyle::LINES)
-            {
-                shaderProgram1.bind();
-                shaderProgram1.setUniformValue("projection", projection);
-                shaderProgram1.setUniformValue("modelView", modelView);
+            GLenum drawMode = (drawingObject.drawStyle == DrawStyle::TRIANGLES) ? GL_TRIANGLES : GL_LINE_LOOP;
 
-                QVector3D lightPos(0.5f, 0.5f, 10.0f);
-                shaderProgram1.setUniformValue("lightPos", lightPos);
-                shaderProgram1.setUniformValue("viewPos", QVector3D(0.0f, 0.0f, 5.0f));
+            drawingObject.vao->bind();
+            glDrawArrays(drawMode, 0, drawingObject.numVertices);
+            drawingObject.vao->release();
 
-                drawingObject.vao->bind();
-                glDrawArrays(GL_LINES, 0, drawingObject.numVertices);
-                drawingObject.vao->release();
-
-                shaderProgram1.release();
-            }
+            shader.release();
         }
     }
+}
+
+bool OpenGlWidget::loadShaders()
+{
+    bool shaderLoaded = false;
+    bool shaderLinked = false;
+
+    shaderLoaded = shadedShader.addShaderFromSourceFile(QOpenGLShader::Vertex, "./shaders/shadedVert.glsl");
+    shaderLoaded = shadedShader.addShaderFromSourceFile(QOpenGLShader::Fragment, "./shaders/shadedFrag.glsl");
+    shaderLinked = shadedShader.link();
+
+    shaderLoaded = wireShader.addShaderFromSourceFile(QOpenGLShader::Vertex, "./shaders/wireVert.glsl");
+    shaderLoaded = wireShader.addShaderFromSourceFile(QOpenGLShader::Fragment, "./shaders/wireFrag.glsl");
+    shaderLinked = wireShader.link();
+
+    if (!shaderLoaded || !shaderLinked)
+    {
+        qDebug() << "Error in loading or linking the shader";
+    }
+    return shaderLoaded && shaderLinked;
 }
 
 void OpenGlWidget::updateModelViewMatrix() {
@@ -123,95 +155,56 @@ void OpenGlWidget::updateModelViewMatrix() {
     modelView.rotate(rotation.z(), 0.0f, 0.0f, 1.0f);
 }
 
-void OpenGlWidget::createArrayAndBuffers()
+int OpenGlWidget::buildDrawingObjects(Data data)
 {
-    // Load shader program
-    bool shaderLoaded = false;
+    makeCurrent();
+    DrawingObject drawingObject;
 
-    shaderLoaded = shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "./shaders/vertex.glsl");
-    shaderLoaded = shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "./shaders/fragment.glsl");
-    shaderProgram.link();
+    QOpenGLShaderProgram& shader = (data.drawStyle == DrawStyle::TRIANGLES) ? shadedShader : wireShader;
 
-    shaderLoaded = shaderProgram1.addShaderFromSourceFile(QOpenGLShader::Vertex, "./shaders/vertex1.glsl");
-    shaderLoaded = shaderProgram1.addShaderFromSourceFile(QOpenGLShader::Fragment, "./shaders/fragment1.glsl");
-    shaderProgram1.link();
+    std::vector<float> vertexData;
+    vertexData.insert(vertexData.end(), data.vertices.begin(), data.vertices.end());
+    vertexData.insert(vertexData.end(), data.normals.begin(), data.normals.end());
+    vertexData.insert(vertexData.end(), data.colors.begin(), data.colors.end());
 
-    for (Data dt : data)
+    drawingObject.vao = new QOpenGLVertexArrayObject();
+    drawingObject.vao->create();
+    drawingObject.vao->bind();
+
+    drawingObject.vbo.create();
+    drawingObject.vbo.bind();
+    drawingObject.vbo.allocate(vertexData.data(), static_cast<int>(vertexData.size() * sizeof(float)));
+
+    shader.bind();
+    shader.enableAttributeArray(0); // Position attribute
+    shader.setAttributeBuffer(0, GL_FLOAT, 0, 3);
+
+    if (data.normals.size() == data.vertices.size())
     {
-        DrawingObject drawingObject;
-        if (dt.drawStyle == DrawStyle::TRIANGLES)
-        {
-            std::vector<float> vertexData;
-            for (int i = 0; i < dt.vertices.size(); i = i + 3)
-            {
-                vertexData.push_back(dt.vertices[i]);
-                vertexData.push_back(dt.vertices[i + 1]);
-                vertexData.push_back(dt.vertices[i + 2]);
-                vertexData.push_back(dt.normals[i]);
-                vertexData.push_back(dt.normals[i + 1]);
-                vertexData.push_back(dt.normals[i + 2]);
-            }
-            drawingObject.vao = new QOpenGLVertexArrayObject();
-            drawingObject.vao->create();
-            drawingObject.vao->bind();
-
-            drawingObject.vbo.create();
-            drawingObject.vbo.bind();
-            drawingObject.vbo.allocate(vertexData.data(), static_cast<int>(vertexData.size() * sizeof(float)));
-
-            shaderProgram.bind();
-            shaderProgram.enableAttributeArray(0); // Position attribute
-            shaderProgram.enableAttributeArray(1); // Normal attribute
-            shaderProgram.setAttributeBuffer(0, GL_FLOAT, 0, 3, 6 * sizeof(float));
-            shaderProgram.setAttributeBuffer(1, GL_FLOAT, 3 * sizeof(float), 3, 6 * sizeof(float));
-            shaderProgram.release();
-
-            drawingObject.vbo.release();
-        }
-        else if (dt.drawStyle == DrawStyle::LINES)
-        {
-            std::vector<float> vertexData1;
-            for (int i = 0; i < dt.vertices.size(); i = i + 3)
-            {
-                vertexData1.push_back(dt.vertices[i]);
-                vertexData1.push_back(dt.vertices[i + 1]);
-                vertexData1.push_back(dt.vertices[i + 2]);
-                vertexData1.push_back(dt.normals[i]);
-                vertexData1.push_back(dt.normals[i + 1]);
-                vertexData1.push_back(dt.normals[i + 2]);
-                vertexData1.push_back(dt.colors[i]);
-                vertexData1.push_back(dt.colors[i + 1]);
-                vertexData1.push_back(dt.colors[i + 2]);
-            }
-
-            drawingObject.vao = new QOpenGLVertexArrayObject();
-            drawingObject.vao->create();
-            drawingObject.vao->bind();
-
-            drawingObject.vbo.create();
-            drawingObject.vbo.bind();
-            drawingObject.vbo.allocate(vertexData1.data(), static_cast<int>(vertexData1.size() * sizeof(float)));
-            glFlush();
-
-            shaderProgram1.bind();
-            shaderProgram1.enableAttributeArray(0); // Position attribute
-            shaderProgram1.enableAttributeArray(1); // Normal attribute
-            shaderProgram1.enableAttributeArray(2); // color attribute
-            shaderProgram1.setAttributeBuffer(0, GL_FLOAT, 0, 3, 9 * sizeof(float));
-            shaderProgram1.setAttributeBuffer(1, GL_FLOAT, 3 * sizeof(float), 3, 9 * sizeof(float));
-            shaderProgram1.setAttributeBuffer(2, GL_FLOAT, 6 * sizeof(float), 3, 9 * sizeof(float));
-            shaderProgram1.release();
-
-            drawingObject.vbo.release();
-        }
-
-        drawingObject.numVertices = dt.vertices.size();
-        drawingObject.drawStyle = dt.drawStyle;
-        drawingObjects.push_back(drawingObject);
-        isInitialized = true;
-
+        shader.enableAttributeArray(1); // Normal attribute
+        shader.setAttributeBuffer(1, GL_FLOAT, data.vertices.size() * sizeof(float), 3);
     }
+
+    if (data.colors.size() == data.vertices.size())
+    {
+        shader.enableAttributeArray(2); // color attribute
+        shader.setAttributeBuffer(2, GL_FLOAT, ((data.vertices.size() * sizeof(float)) + (data.normals.size() * sizeof(float))), 3);
+    }
+
+    shader.release();
+    drawingObject.vbo.release();
+
+    drawingObject.numVertices = data.vertices.size();
+    drawingObject.drawStyle = data.drawStyle;
+    drawingObjects.push_back(drawingObject);
+    idToIndex.insert(drawingObjects.size(), drawingObjects.size() - 1);
+    update();
+    doneCurrent();
+    isInitialized = true;
+
+    return drawingObjects.size(); // Return the index of the drawing object
 }
+
 void OpenGlWidget::wheelEvent(QWheelEvent* event) {
     // Zoom in or out
     if (event->angleDelta().y() > 0)
@@ -219,9 +212,7 @@ void OpenGlWidget::wheelEvent(QWheelEvent* event) {
     else
         zoomLevel /= 1.1f;  // Zoom out
     update();
-
     viewChange(zoomLevel, rotation, panOffset);
-
 }
 
 void OpenGlWidget::mousePressEvent(QMouseEvent* event) {
@@ -243,6 +234,5 @@ void OpenGlWidget::mouseMoveEvent(QMouseEvent* event) {
         panOffset.setY(panOffset.y() - delta.y() * 0.01f);
     }
     update();
-
     viewChange(zoomLevel, rotation, panOffset);
 }

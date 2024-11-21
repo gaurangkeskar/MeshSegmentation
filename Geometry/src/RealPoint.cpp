@@ -1,4 +1,7 @@
 #include "RealPoint.h"
+
+#define TOLERANCE 1e-6
+
 using namespace Geometry;
 
 RealPoint::RealPoint(double x, double y, double z)
@@ -6,11 +9,9 @@ RealPoint::RealPoint(double x, double y, double z)
 {
 }
 
-RealPoint::RealPoint(Point p, Triangulation& triangulation)
+Geometry::RealPoint::RealPoint(const RealPoint& other)
+	:mX(other.mX), mY(other.mY), mZ(other.mX)
 {
-	mX = triangulation.UniqueNumbers[p.X()];
-	mY = triangulation.UniqueNumbers[p.Y()];
-	mZ = triangulation.UniqueNumbers[p.Z()];
 }
 
 RealPoint::~RealPoint()
@@ -35,7 +36,7 @@ double RealPoint::Z() const
 
 bool RealPoint::operator==(RealPoint& other)
 {
-	if (mX != other.mX || mY != other.mY || mZ != other.mZ) {
+	if (fabs(mX - other.mX) > TOLERANCE || fabs(mY - other.mY) > TOLERANCE || fabs(mZ - other.mZ) > TOLERANCE) {
 		return false;
 	}
 	return true;
@@ -49,13 +50,13 @@ RealPoint RealPoint::operator+(const RealPoint& other) const {
 	return RealPoint(mX + other.mX, mY + other.mY, mZ + other.mZ);
 }
 
-void RealPoint::assign(RealPoint& other)
-{
-	mX = other.mX;
-	mY = other.mY;
-	mZ = other.mZ;
-}
-
 RealPoint RealPoint::operator*(double scalar) const {
 	return RealPoint(mX * scalar, mY * scalar, mZ * scalar);
+}
+
+void Geometry::RealPoint::convertPointToRealPoint(Point point, std::vector<double> uniqueNumbers)
+{
+	mX = uniqueNumbers[point.X()];
+	mY = uniqueNumbers[point.Y()];
+	mZ = uniqueNumbers[point.Z()];
 }

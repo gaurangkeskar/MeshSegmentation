@@ -1,6 +1,7 @@
 #version 330 core
 in vec3 fragNormal;
 in vec3 fragPosition;
+in vec3 fragColor;
 
 uniform vec3 lightPos;
 uniform vec3 viewPos;
@@ -20,9 +21,12 @@ void main() {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
 
     // Combine results
-    vec3 ambient = 0.1 * vec3(1.0, 0.5, 0.31);
-    vec3 diffuse = diff * vec3(1.0, 0.5, 0.31);
-    vec3 specular = spec * vec3(1.0, 1.0, 1.0);
+    vec3 ambient = 0.1 * fragColor;              // Use fragColor for ambient lighting
+    vec3 diffuse = diff * fragColor;             // Use fragColor for diffuse lighting
+    vec3 specular = spec * vec3(1.0, 1.0, 1.0);  // Specular remains white
 
-    color = vec4(ambient + diffuse + specular, 1.0);
+    // Final color
+    vec3 result = ambient + diffuse + specular;
+    color = vec4(result, 1.0);
+
 }

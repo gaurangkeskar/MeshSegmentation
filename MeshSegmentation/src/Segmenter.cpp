@@ -5,27 +5,33 @@
 #define TOLERANCE 0.00001
 #define THRESHOLD 1e-6
 
+using namespace Geometry;
+
 void Segmenter::processPlanarSurfaces(Triangulation& inputTriangulation, Segment& planarSegment)
 {
 	for (int i = 0; i < inputTriangulation.Triangles.size(); i++)
 	{
 		Triangulation currentTriangulation;
 
-		const RealPoint p1(inputTriangulation.Triangles[i].P1(), inputTriangulation);
+		RealPoint p1(0, 0, 0);
+		p1.convertPointToRealPoint(inputTriangulation.Triangles[i].P1(), inputTriangulation.UniqueNumbers);
 
-		const RealPoint n1(inputTriangulation.Triangles[i].Normal(), inputTriangulation);
+		RealPoint n1(0, 0, 0);
+		n1.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal(), inputTriangulation.UniqueNumbers);
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]); 
 
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++)
 		{
-			const RealPoint n2(inputTriangulation.Triangles[j].Normal(), inputTriangulation);
+			RealPoint n2(0, 0, 0);
+			n2.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal(), inputTriangulation.UniqueNumbers);
 
 			// Check if the angle between the normals is very small
 			if (fabs(Utilities::getAngle(n1, n2)) < TOLERANCE)
 			{
-				const RealPoint p2(inputTriangulation.Triangles[j].P2(), inputTriangulation);
+				RealPoint p2(0, 0, 0);
+				p2.convertPointToRealPoint(inputTriangulation.Triangles[j].P1(), inputTriangulation.UniqueNumbers);
 
 				RealPoint v = p2 - p1;
 
@@ -55,13 +61,16 @@ void Segmenter::processCylindricalSurfaces(Triangulation& inputTriangulation, Se
 		Triangulation currentTriangulation;
 		RealPoint intersectionAxis(0, 0, 0);
 
-		const RealPoint n1(inputTriangulation.Triangles[i].Normal(), inputTriangulation);
+		RealPoint n1(0, 0, 0);
+		n1.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal(), inputTriangulation.UniqueNumbers);
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
 
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-			const RealPoint n2(inputTriangulation.Triangles[j].Normal(), inputTriangulation);
+			
+			RealPoint n2(0, 0, 0);
+			n2.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal(), inputTriangulation.UniqueNumbers);
 
 			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
 
@@ -70,7 +79,7 @@ void Segmenter::processCylindricalSurfaces(Triangulation& inputTriangulation, Se
 
 				//Check for first iteration
 				if (!flag) {
-					intersectionAxis.assign(axis);
+					intersectionAxis = axis;
 					flag = true;
 				}
 
@@ -97,18 +106,22 @@ void Segmenter::processSphericalSurfaces(Triangulation& inputTriangulation, Segm
 		bool flag = false;
 		Triangulation currentTriangulation;
 		RealPoint intersection(0, 0, 0);
-		const RealPoint p1(inputTriangulation.Triangles[i].P1(), inputTriangulation);
+		RealPoint p1(0, 0, 0);
+		p1.convertPointToRealPoint(inputTriangulation.Triangles[i].P1(), inputTriangulation.UniqueNumbers);
 
-		const RealPoint n1(inputTriangulation.Triangles[i].Normal(), inputTriangulation);
+		RealPoint n1(0, 0, 0);
+		n1.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal(), inputTriangulation.UniqueNumbers);
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
 
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-			const RealPoint n2(inputTriangulation.Triangles[j].Normal(), inputTriangulation);
+			RealPoint n2(0, 0, 0);
+			n2.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal(), inputTriangulation.UniqueNumbers);
 
 			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
-				const RealPoint p2(inputTriangulation.Triangles[j].P2(), inputTriangulation);
+				RealPoint p2(0, 0, 0);
+				p2.convertPointToRealPoint(inputTriangulation.Triangles[j].P1(), inputTriangulation.UniqueNumbers);
 
 				RealPoint tempIntersection(0, 0, 0);
 
@@ -117,7 +130,7 @@ void Segmenter::processSphericalSurfaces(Triangulation& inputTriangulation, Segm
 
 					//Check for first iteration
 					if (!flag) {
-						intersection.assign(tempIntersection);
+						intersection = tempIntersection;
 						flag = true;
 					}
 

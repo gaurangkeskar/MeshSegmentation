@@ -1,5 +1,6 @@
 #include "Utilities.h"
 #include <cmath>
+#include <algorithm>
 
 #define TOLERANCE 1e-6
 
@@ -92,5 +93,5 @@ void Utilities::normalize(RealPoint& p1)
     double y = p1.Y() / magnitude(p1);
     double z = p1.Z() / magnitude(p1);
     RealPoint temp(x,y,z);
-    p1.assign(temp);
+    p1 = temp;
 }
