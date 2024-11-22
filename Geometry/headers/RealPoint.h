@@ -19,8 +19,6 @@ namespace Geometry {
 		RealPoint operator+(const RealPoint& other) const;
 		RealPoint operator*(double scalar) const;
 
-		void convertPointToRealPoint(Point point, std::vector<double> uniqueNumbers);
-
 	private:
 		double mX;
 		double mY;

@@ -14,10 +14,10 @@ void Segmenter::processPlanarSurfaces(Triangulation& inputTriangulation, Segment
 		Triangulation currentTriangulation;
 
 		RealPoint p1(0, 0, 0);
-		p1.convertPointToRealPoint(inputTriangulation.Triangles[i].P1(), inputTriangulation.UniqueNumbers);
+		p1 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[i].P1());
 
 		RealPoint n1(0, 0, 0);
-		n1.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal(), inputTriangulation.UniqueNumbers);
+		n1 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal());
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]); 
@@ -25,13 +25,13 @@ void Segmenter::processPlanarSurfaces(Triangulation& inputTriangulation, Segment
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++)
 		{
 			RealPoint n2(0, 0, 0);
-			n2.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal(), inputTriangulation.UniqueNumbers);
+			n2 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal());
 
 			// Check if the angle between the normals is very small
 			if (fabs(Utilities::getAngle(n1, n2)) < TOLERANCE)
 			{
 				RealPoint p2(0, 0, 0);
-				p2.convertPointToRealPoint(inputTriangulation.Triangles[j].P1(), inputTriangulation.UniqueNumbers);
+				p2 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[j].P1());
 
 				RealPoint v = p2 - p1;
 
@@ -62,7 +62,7 @@ void Segmenter::processCylindricalSurfaces(Triangulation& inputTriangulation, Se
 		RealPoint intersectionAxis(0, 0, 0);
 
 		RealPoint n1(0, 0, 0);
-		n1.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal(), inputTriangulation.UniqueNumbers);
+		n1 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal());
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
@@ -70,7 +70,7 @@ void Segmenter::processCylindricalSurfaces(Triangulation& inputTriangulation, Se
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
 			
 			RealPoint n2(0, 0, 0);
-			n2.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal(), inputTriangulation.UniqueNumbers);
+			n2 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal());
 
 			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
 
@@ -107,21 +107,21 @@ void Segmenter::processSphericalSurfaces(Triangulation& inputTriangulation, Segm
 		Triangulation currentTriangulation;
 		RealPoint intersection(0, 0, 0);
 		RealPoint p1(0, 0, 0);
-		p1.convertPointToRealPoint(inputTriangulation.Triangles[i].P1(), inputTriangulation.UniqueNumbers);
+		p1 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[i].P1());
 
 		RealPoint n1(0, 0, 0);
-		n1.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal(), inputTriangulation.UniqueNumbers);
+		n1 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal());
 
 		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
 		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
 
 		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
 			RealPoint n2(0, 0, 0);
-			n2.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal(), inputTriangulation.UniqueNumbers);
+			n2 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal());
 
 			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
 				RealPoint p2(0, 0, 0);
-				p2.convertPointToRealPoint(inputTriangulation.Triangles[j].P1(), inputTriangulation.UniqueNumbers);
+				p2 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[j].P1());
 
 				RealPoint tempIntersection(0, 0, 0);
 

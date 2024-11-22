@@ -53,10 +53,3 @@ RealPoint RealPoint::operator+(const RealPoint& other) const {
 RealPoint RealPoint::operator*(double scalar) const {
 	return RealPoint(mX * scalar, mY * scalar, mZ * scalar);
 }
-
-void Geometry::RealPoint::convertPointToRealPoint(Point point, std::vector<double> uniqueNumbers)
-{
-	mX = uniqueNumbers[point.X()];
-	mY = uniqueNumbers[point.Y()];
-	mZ = uniqueNumbers[point.Z()];
-}
