@@ -7,8 +7,9 @@
 
 using namespace Geometry;
 
-void Segmenter::processPlanarSurfaces(Triangulation& inputTriangulation, Segment& planarSegment)
+std::vector<Triangulation> Segmenter::processPlanarSurfaces(Triangulation& inputTriangulation)
 {
+	std::vector<Triangulation> planarSurfaces;
 	for (int i = 0; i < inputTriangulation.Triangles.size(); i++)
 	{
 		Triangulation currentTriangulation;
@@ -48,60 +49,16 @@ void Segmenter::processPlanarSurfaces(Triangulation& inputTriangulation, Segment
 		{
 			inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
 			i--;
-			planarSegment.planarSurfaces.push_back(currentTriangulation);
-		}
-
-	}
-}
-
-void Segmenter::processCylindricalSurfaces(Triangulation& inputTriangulation, Segment& cylindricalSegment)
-{
-	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
-		bool flag = false;
-		Triangulation currentTriangulation;
-		RealPoint intersectionAxis(0, 0, 0);
-
-		RealPoint n1(0, 0, 0);
-		n1 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal());
-
-		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
-		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
-
-		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
-			
-			RealPoint n2(0, 0, 0);
-			n2 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal());
-
-			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
-
-				//Get axis via cross product
-				RealPoint axis = Utilities::crossProduct(n1, n2);
-
-				//Check for first iteration
-				if (!flag) {
-					intersectionAxis = axis;
-					flag = true;
-				}
-
-				if (Utilities::magnitude(Utilities::crossProduct(intersectionAxis, axis)) < THRESHOLD) {
-					currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
-					inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);
-					j--;
-				}
-			}
-		}
-		if (currentTriangulation.Triangles.size() > 1) {
-			inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
-			i--;
-			cylindricalSegment.cylindricalSurfaces.push_back(currentTriangulation);
+			planarSurfaces.push_back(currentTriangulation);
 		}
 	}
+	return planarSurfaces;
 }
 
 
-
-void Segmenter::processSphericalSurfaces(Triangulation& inputTriangulation, Segment& sphericalSegment)
+std::vector<Triangulation> Segmenter::processSphericalSurfaces(Triangulation& inputTriangulation)
 {
+	std::vector<Triangulation> sphericalSurfaces;
 	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
 		bool flag = false;
 		Triangulation currentTriangulation;
@@ -147,7 +104,58 @@ void Segmenter::processSphericalSurfaces(Triangulation& inputTriangulation, Segm
 		{
 			inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
 			i--;
-			sphericalSegment.sphericalSurfaces.push_back(currentTriangulation);
+			sphericalSurfaces.push_back(currentTriangulation);
 		}
 	}
+	return sphericalSurfaces;
 }
+
+
+
+
+
+
+
+//std::vector<Triangulation> Segmenter::processCylindricalSurfaces(Triangulation& inputTriangulation)
+//{
+//	for (int i = 0; i < inputTriangulation.Triangles.size(); i++) {
+//		bool flag = false;
+//		Triangulation currentTriangulation;
+//		RealPoint intersectionAxis(0, 0, 0);
+//
+//		RealPoint n1(0, 0, 0);
+//		n1 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[i].Normal());
+//
+//		currentTriangulation.UniqueNumbers = inputTriangulation.UniqueNumbers;
+//		currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[i]);
+//
+//		for (int j = i + 1; j < inputTriangulation.Triangles.size(); j++) {
+//			
+//			RealPoint n2(0, 0, 0);
+//			n2 = inputTriangulation.convertPointToRealPoint(inputTriangulation.Triangles[j].Normal());
+//
+//			if (fabs(Utilities::getAngle(n1, n2)) > TOLERANCE) {
+//
+//				//Get axis via cross product
+//				RealPoint axis = Utilities::crossProduct(n1, n2);
+//
+//				//Check for first iteration
+//				if (!flag) {
+//					intersectionAxis = axis;
+//					flag = true;
+//				}
+//
+//				if (Utilities::magnitude(Utilities::crossProduct(intersectionAxis, axis)) < THRESHOLD) {
+//					currentTriangulation.Triangles.push_back(inputTriangulation.Triangles[j]);
+//					inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + j);
+//					j--;
+//				}
+//			}
+//		}
+//		if (currentTriangulation.Triangles.size() > 1) {
+//			inputTriangulation.Triangles.erase(inputTriangulation.Triangles.begin() + i);
+//			i--;
+//			cylindricalSegment.cylindricalSurfaces.push_back(currentTriangulation);
+//		}
+//	}
+//}

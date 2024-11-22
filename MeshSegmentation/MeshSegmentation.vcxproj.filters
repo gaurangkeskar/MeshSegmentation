@@ -31,9 +31,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Segment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\MeshSegmentation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -49,15 +46,24 @@
     <ClCompile Include="src\Segmenter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\PlanarSegment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SphericalSegment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\Segment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="headers\Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\Segmenter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\PlanarSegment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\SphericalSegment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

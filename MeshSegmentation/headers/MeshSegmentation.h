@@ -20,12 +20,10 @@ private slots:
     void onLoadFileClick();
     void onSegmentation();
     void onPlanarClick();
-    void onCylindricalClick();
     void onSphericalClick();
 
 private:
     bool showPlanar = false;
-    bool showCylindrical = false;
     bool showSpherical = false;
 
     void setupUi();
@@ -34,7 +32,6 @@ private:
     QPushButton* loadFile;
     QPushButton* segment;
     QCheckBox* planarCheckbox;
-    QCheckBox* cylindricalCheckbox;
     QCheckBox* sphericalCheckbox;
 
     OpenGlWidget* openglWidget;
