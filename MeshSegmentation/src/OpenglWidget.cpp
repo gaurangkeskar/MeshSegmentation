@@ -31,34 +31,13 @@ void OpenGlWidget::removeObject(int id)
 {
     makeCurrent();
     
-    // Find the index of the drawing object with the given id
-    int index = idToIndex.value(id, -1);
-    
-    if (index != -1)
-    {
-        // Remove the drawing object from the vector
-        DrawingObject drawingObject = drawingObjects.at(index);
-        drawingObjects.erase(drawingObjects.begin() + index);
-        
-        // Update the idToIndex map
-        idToIndex.remove(id);
-        for (int i = index; i <= drawingObjects.size(); i++)
-        {
-            if(idToIndex.contains(i + 1))
-            {
-                int objectId = idToIndex.key(i);
-                idToIndex[i] = objectId;
-            }
+    for (int i = 0; i < drawingObjects.size(); i++) {
+        if (drawingObjects[i].id == id) {
+            drawingObjects.erase(drawingObjects.begin() + i);
         }
-        
-        // Destroy the VAO and VBO of the removed drawing object
-        drawingObject.vao->destroy();
-        drawingObject.vbo.destroy();
-        
-        // Update the OpenGL context
-        update();
     }
-    
+
+    update();
     doneCurrent();
 }
 
@@ -196,8 +175,9 @@ int OpenGlWidget::buildDrawingObjects(Data data)
 
     drawingObject.numVertices = data.vertices.size();
     drawingObject.drawStyle = data.drawStyle;
+    drawingObject.id = drawingObjects.size();
     drawingObjects.push_back(drawingObject);
-    idToIndex.insert(drawingObjects.size(), drawingObjects.size() - 1);
+    //idToIndex.insert(drawingObjects.size(), drawingObjects.size() - 1);
     update();
     doneCurrent();
     isInitialized = true;

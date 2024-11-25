@@ -1,8 +1,7 @@
 #pragma once
-#include "Point.h"
-#include <vector>
 
-namespace Geometry {
+namespace Geometry 
+{
 	class RealPoint
 	{
 	public:

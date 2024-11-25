@@ -7,7 +7,7 @@ class PlanarSegment
 {
 public:
 	std::vector<Triangulation> planarSurfaces;
-	PlanarSegment(std::vector<Triangulation>);
+	PlanarSegment(std::vector<Triangulation> surfaces);
 	~PlanarSegment();
 };
 

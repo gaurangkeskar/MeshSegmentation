@@ -1,4 +1,5 @@
 #include "RealPoint.h"
+#include <cmath>
 
 #define TOLERANCE 1e-6
 
@@ -9,7 +10,7 @@ RealPoint::RealPoint(double x, double y, double z)
 {
 }
 
-Geometry::RealPoint::RealPoint(const RealPoint& other)
+RealPoint::RealPoint(const RealPoint& other)
 	:mX(other.mX), mY(other.mY), mZ(other.mX)
 {
 }
@@ -36,20 +37,24 @@ double RealPoint::Z() const
 
 bool RealPoint::operator==(RealPoint& other)
 {
-	if (fabs(mX - other.mX) > TOLERANCE || fabs(mY - other.mY) > TOLERANCE || fabs(mZ - other.mZ) > TOLERANCE) {
+	if (fabs(mX - other.mX) > TOLERANCE || fabs(mY - other.mY) > TOLERANCE || fabs(mZ - other.mZ) > TOLERANCE) 
+	{
 		return false;
 	}
 	return true;
 }
 
-RealPoint RealPoint::operator-(const RealPoint& other) const {
+RealPoint RealPoint::operator-(const RealPoint& other) const 
+{
 	return RealPoint(mX - other.mX, mY - other.mY, mZ - other.mZ);
 }
 
-RealPoint RealPoint::operator+(const RealPoint& other) const {
+RealPoint RealPoint::operator+(const RealPoint& other) const 
+{
 	return RealPoint(mX + other.mX, mY + other.mY, mZ + other.mZ);
 }
 
-RealPoint RealPoint::operator*(double scalar) const {
+RealPoint RealPoint::operator*(double scalar) const 
+{
 	return RealPoint(mX * scalar, mY * scalar, mZ * scalar);
 }

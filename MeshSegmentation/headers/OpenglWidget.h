@@ -34,6 +34,7 @@ private:
         QOpenGLBuffer vbo;
         size_t numVertices;
         DrawStyle drawStyle;
+        int id;
     };
 
 public:
@@ -77,7 +78,6 @@ private:
     QPoint lastMousePosition;
 
     QVector<DrawingObject> drawingObjects;
-    QMap<int, int> idToIndex;
     bool isInitialized;
 
 };

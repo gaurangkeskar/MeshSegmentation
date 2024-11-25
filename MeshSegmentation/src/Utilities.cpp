@@ -54,7 +54,16 @@ bool Utilities::findIntersection(const RealPoint& p1, const RealPoint& n1, const
     double b3 = p2.Z() - p1.Z();
 
     // Calculate the determinant of the coefficient matrix A
-    double detA = A11 * A22 - A12 * A21;
+    double detA;
+    if((n1.Z() - n2.Z()) < TOLERANCE)
+        detA = A11 * A22 - A12 * A21;
+    else if((n1.X() - n2.X()) < TOLERANCE)
+        detA = A31 * A22 - A32 * A21;
+    else
+        detA = A11 * A32 - A12 * A31;
+
+    /*if (detA < TOLERANCE)
+        return false;*/
 
     // Compute the determinants for t and s using the b vector and coefficient matrix A
     double detT = b1 * A22 - b2 * A12;
@@ -73,6 +82,9 @@ bool Utilities::findIntersection(const RealPoint& p1, const RealPoint& n1, const
     if ((intersection - checkPoint).X() < TOLERANCE && (intersection - checkPoint).Y() < TOLERANCE && (intersection - checkPoint).Z() < TOLERANCE) {
         return true;
     }
+
+    if (magnitude(intersection - checkPoint) < TOLERANCE)
+        return true;
 
     return false;
 }

@@ -7,6 +7,6 @@ class SphericalSegment
 {
 public:
 	std::vector<Triangulation> curvedSurfaces;
-	SphericalSegment(std::vector<Triangulation>);
+	SphericalSegment(std::vector<Triangulation> surfaces);
 	~SphericalSegment();
 };

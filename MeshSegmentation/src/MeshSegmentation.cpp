@@ -67,39 +67,52 @@ void MeshSegmentation::onSegmentation()
     SphericalSegment* spherical;
     Segmenter segmenter;
 
-    float red[3] = { 1.0,0.0,0.0 };
-    //float green[3] = { 0.0,1.0,0.0 };
-    float blue[3] = { 0.0,0.0,1.0 };
+    float red[3] = { 1.0, 0.0, 0.0 };
+    float blue[3] = { 0.0, 0.0, 1.0 };
 
-    std::vector<Triangulation> segments;
-    
-    segments = segmenter.processPlanarSurfaces(inputTriangulation);
-    
-    if (segments.size() > 0 && showPlanar) {
-        planar = new PlanarSegment(segments);
-        segments.clear();
+    // Get planar surfaces as a pointer to vector of Triangulations
+    std::vector<Triangulation>* segments = segmenter.processPlanarSurfaces(inputTriangulation);
 
-        for (int i = 0; i < planar->planarSurfaces.size(); i++) {
+    if (showPlanar)
+    {
+        planar = new PlanarSegment(*segments);  // Dereference pointer to pass the vector to PlanarSegment
+        segments->clear();  // Clear the memory of the vector after use
+
+        // Iterate through planar surfaces and render
+        for (int i = 0; i < planar->planarSurfaces.size(); i++)
+        {
             Triangulation triangulation = planar->planarSurfaces[i];
             OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, red);
             data.drawStyle = OpenGlWidget::TRIANGLES;
             openglWidgetOutput->addObject(data);
         }
+
+        delete planar;  // Free memory after use
     }
 
+    // Get spherical surfaces as a pointer to vector of Triangulations
     segments = segmenter.processSphericalSurfaces(inputTriangulation);
-    if (segments.size() > 0 && showSpherical) {
-        spherical = new SphericalSegment(segments);
-        segments.clear();
 
-        for (int i = 0; i < spherical->curvedSurfaces.size(); i++) {
+    if (showSpherical)
+    {
+        spherical = new SphericalSegment(*segments);  // Dereference pointer to pass the vector to SphericalSegment
+        segments->clear();  // Clear the memory of the vector after use
+
+        // Iterate through spherical surfaces and render
+        for (int i = 0; i < spherical->curvedSurfaces.size(); i++)
+        {
             Triangulation triangulation = spherical->curvedSurfaces[i];
             OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, blue);
             data.drawStyle = OpenGlWidget::TRIANGLES;
             openglWidgetOutput->addObject(data);
         }
+
+        delete spherical;  // Free memory after use
     }
+
+    delete segments;  // Free the dynamically allocated vector memory
 }
+
 
 void MeshSegmentation::onPlanarClick()
 {
@@ -119,13 +132,18 @@ void MeshSegmentation::onSphericalClick()
 
 void MeshSegmentation::loadSTLFile(const QString& filePath, Triangulation& inputTriangulation, OpenGlWidget* openglWidget)
 {
-    float white[3] = {1.0,1.0,1.0};
+    float white[3] = { 1.0,0.0,0.0 };
     STLReader reader;
     reader.read(filePath.toStdString(), inputTriangulation);
     OpenGlWidget::Data data;
     data = convertTriangulationToGraphicsObject(inputTriangulation, white);
     data.drawStyle = OpenGlWidget::TRIANGLES;
     openglWidget->addObject(data);
+    objectCount++;
+    if (objectCount == 3) {
+        openglWidget->removeObject(1);
+        //openglWidget->removeObject(1);
+    }
 }
 
 OpenGlWidget::Data MeshSegmentation::convertTriangulationToGraphicsObject(const Triangulation& triangulation, float clr[3])
