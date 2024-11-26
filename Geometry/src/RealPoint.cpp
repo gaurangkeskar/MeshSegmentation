@@ -35,7 +35,7 @@ double RealPoint::Z() const
 	return mZ;
 }
 
-bool RealPoint::operator==(RealPoint& other)
+bool RealPoint::operator==(const RealPoint& other)
 {
 	if (fabs(mX - other.mX) > TOLERANCE || fabs(mY - other.mY) > TOLERANCE || fabs(mZ - other.mZ) > TOLERANCE) 
 	{
@@ -54,7 +54,7 @@ RealPoint RealPoint::operator+(const RealPoint& other) const
 	return RealPoint(mX + other.mX, mY + other.mY, mZ + other.mZ);
 }
 
-RealPoint RealPoint::operator*(double scalar) const 
+RealPoint RealPoint::operator*(const double scalar) const 
 {
 	return RealPoint(mX * scalar, mY * scalar, mZ * scalar);
 }

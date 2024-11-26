@@ -13,10 +13,10 @@ namespace Geometry
 		double Y() const;
 		double Z() const;
 
-		bool operator==(RealPoint& other);
+		bool operator==(const RealPoint& other);
 		RealPoint operator-(const RealPoint& other) const;
 		RealPoint operator+(const RealPoint& other) const;
-		RealPoint operator*(double scalar) const;
+		RealPoint operator*(const double scalar) const;
 
 	private:
 		double mX;

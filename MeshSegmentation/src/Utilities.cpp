@@ -12,52 +12,52 @@ Utilities::~Utilities()
 {
 }
 
-double Utilities::dotProduct(const RealPoint& p1, const RealPoint& p2)
+double Utilities::dotProduct(const RealPoint& point1, const RealPoint& point2)
 {
-    // Dot product formula: p1.X() * p2.X() + p1.Y() * p2.Y() + p1.Z() * p2.Z()
-    double x = p1.X() * p2.X();
-	double y = p1.Y() * p2.Y();
-	double z = p1.Z() * p2.Z();
+    // Dot product formula: point1.X() * point2.X() + point1.Y() * point2.Y() + point1.Z() * point2.Z()
+    double x = point1.X() * point2.X();
+	double y = point1.Y() * point2.Y();
+	double z = point1.Z() * point2.Z();
 	return x + y + z;
 }
 
-double Utilities::magnitude(const RealPoint& p1)
+double Utilities::magnitude(const RealPoint& point1)
 {
-    // Magnitude formula: sqrt(p1.X()^2 + p1.Y()^2 + p1.Z()^2)
-	double x = pow(p1.X(), 2);
-	double y = pow(p1.Y(), 2);
-	double z = pow(p1.Z(), 2);
+    // Magnitude formula: sqrt(point1.X()^2 + point1.Y()^2 + point1.Z()^2)
+	double x = pow(point1.X(), 2);
+	double y = pow(point1.Y(), 2);
+	double z = pow(point1.Z(), 2);
 
 	return sqrt(x + y + z);
 }
 
-double Utilities::getAngle(const RealPoint& n1, const RealPoint& n2)
+double Utilities::getAngle(const RealPoint& normal1, const RealPoint& normal2)
 {
-    // Cosine of the angle between two vectors: dotProduct(n1, n2) / (magnitude(n1) * magnitude(n2))
-    double cosine = dotProduct(n1, n2) / (magnitude(n1) * magnitude(n2));
+    // Cosine of the angle between two vectors: dotProduct(normal1, normal2) / (magnitude(normal1) * magnitude(normal2))
+    double cosine = dotProduct(normal1, normal2) / (magnitude(normal1) * magnitude(normal2));
     // Ensure the cosine value is within the valid range [-1, 1] to avoid domain errors in acos
     cosine = std::min(1.0, std::max(-1.0, cosine));
     return acos(cosine);
 	
 }
 
-bool Utilities::findIntersection(const RealPoint& p1, const RealPoint& n1, const RealPoint& p2, const RealPoint& n2,  RealPoint& intersection)
+bool Utilities::findIntersection(const RealPoint& point1, const RealPoint& normal1, const RealPoint& point2, const RealPoint& normal2,  RealPoint& intersection)
 {
-    // Extract direction components for the first line (n1) and the second line (n2)
-    double A11 = n1.X(), A12 = -n2.X();
-    double A21 = n1.Y(), A22 = -n2.Y();
-    double A31 = n1.Z(), A32 = -n2.Z();
+    // Extract direction components for the first line (normal1) and the second line (normal2)
+    double A11 = normal1.X(), A12 = -normal2.X();
+    double A21 = normal1.Y(), A22 = -normal2.Y();
+    double A31 = normal1.Z(), A32 = -normal2.Z();
 
-    // Compute the difference in position vectors between the two points P1 and P2
-    double b1 = p2.X() - p1.X();
-    double b2 = p2.Y() - p1.Y();
-    double b3 = p2.Z() - p1.Z();
+    // Compute the difference in position vectors between the two points point1 and point2
+    double b1 = point2.X() - point1.X();
+    double b2 = point2.Y() - point1.Y();
+    double b3 = point2.Z() - point1.Z();
 
     // Calculate the determinant of the coefficient matrix A
     double detA;
-    if((n1.Z() - n2.Z()) < TOLERANCE)
+    if((normal1.Z() - normal2.Z()) < TOLERANCE)
         detA = A11 * A22 - A12 * A21;
-    else if((n1.X() - n2.X()) < TOLERANCE)
+    else if((normal1.X() - normal2.X()) < TOLERANCE)
         detA = A31 * A22 - A32 * A21;
     else
         detA = A11 * A32 - A12 * A31;
@@ -72,11 +72,11 @@ bool Utilities::findIntersection(const RealPoint& p1, const RealPoint& n1, const
     double t = detT / detA;
     double s = detS / detA;
 
-    // Compute the intersection point by applying the parameter t to the first line (P1 + t * n1)
-    intersection = p1 + n1 * t;
+    // Compute the intersection point by applying the parameter t to the first line (point1 + t * normal1)
+    intersection = point1 + normal1 * t;
 
     // Compute a point on the second line using parameter s
-    RealPoint checkPoint = p2 + n2 * s;
+    RealPoint checkPoint = point2 + normal2 * s;
 
     // Check if the two computed points (intersection and checkPoint) are close enough
     if ((intersection - checkPoint).X() < TOLERANCE && (intersection - checkPoint).Y() < TOLERANCE && (intersection - checkPoint).Z() < TOLERANCE) {
@@ -89,21 +89,21 @@ bool Utilities::findIntersection(const RealPoint& p1, const RealPoint& n1, const
     return false;
 }
 
-RealPoint Utilities::crossProduct(const RealPoint& n1, const RealPoint& n2)
+RealPoint Utilities::crossProduct(const RealPoint& normal1, const RealPoint& normal2)
 {
-    // Cross product formula: (n2.Z() * n1.Y() - n1.Z() * n2.Y(), n2.Z() * n1.X() - n1.Z() * n2.X(), n2.Y() * n1.X() - n2.X() * n1.Y())
-	double x = n2.Z() * n1.Y() - n1.Z() * n2.Y();
-	double y = n1.Z() * n2.X() - n2.Z() * n1.X();
-	double z = n2.Y() * n1.X() - n2.X() * n1.Y();
+    // Cross product formula: (normal2.Z() * normal1.Y() - normal1.Z() * normal2.Y(), normal2.Z() * normal1.X() - normal1.Z() * normal2.X(), normal2.Y() * normal1.X() - normal2.X() * normal1.Y())
+	double x = normal2.Z() * normal1.Y() - normal1.Z() * normal2.Y();
+	double y = normal1.Z() * normal2.X() - normal2.Z() * normal1.X();
+	double z = normal2.Y() * normal1.X() - normal2.X() * normal1.Y();
 	return RealPoint(x, y, z);
 }
 
-void Utilities::normalize(RealPoint& p1)
+void Utilities::normalize(RealPoint& point1)
 {
     // Normalize the vector by dividing each component by the magnitude   
-    double x = p1.X() / magnitude(p1);
-    double y = p1.Y() / magnitude(p1);
-    double z = p1.Z() / magnitude(p1);
+    double x = point1.X() / magnitude(point1);
+    double y = point1.Y() / magnitude(point1);
+    double z = point1.Z() / magnitude(point1);
     RealPoint temp(x,y,z);
-    p1 = temp;
+    point1 = temp;
 }

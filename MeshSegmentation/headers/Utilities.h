@@ -8,10 +8,10 @@ public:
 	Utilities();
 	~Utilities();
 
-	static double dotProduct(const RealPoint& p1, const RealPoint& p2);
-	static double magnitude(const RealPoint& p1);
-	static double getAngle(const RealPoint& n1, const RealPoint& n2);
-	static bool findIntersection(const RealPoint& p1, const RealPoint& n1, const RealPoint& p2, const RealPoint& n2, RealPoint& intersection);
-	static RealPoint crossProduct(const RealPoint& n1, const RealPoint& n2);
-	static void normalize(RealPoint& p1);
+	static double dotProduct(const RealPoint& point1, const RealPoint& point2);
+	static double magnitude(const RealPoint& point1);
+	static double getAngle(const RealPoint& normal1, const RealPoint& normal2);
+	static bool findIntersection(const RealPoint& point1, const RealPoint& normal1, const RealPoint& point2, const RealPoint& normal2, RealPoint& intersection);
+	static RealPoint crossProduct(const RealPoint& normal1, const RealPoint& normal2);
+	static void normalize(RealPoint& point1);
 };

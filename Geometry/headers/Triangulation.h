@@ -12,6 +12,6 @@ namespace Geometry {
         std::vector<double> UniqueNumbers;
         std::vector<Triangle> Triangles;
 
-        RealPoint convertPointToRealPoint(Point point);
+        RealPoint convertPointToRealPoint(const Point& point);
     };
 }

@@ -99,9 +99,9 @@ void MeshSegmentation::onSegmentation()
         segments->clear();  // Clear the memory of the vector after use
 
         // Iterate through spherical surfaces and render
-        for (int i = 0; i < spherical->curvedSurfaces.size(); i++)
+        for (int i = 0; i < spherical->sphericalSurfaces.size(); i++)
         {
-            Triangulation triangulation = spherical->curvedSurfaces[i];
+            Triangulation triangulation = spherical->sphericalSurfaces[i];
             OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, blue);
             data.drawStyle = OpenGlWidget::TRIANGLES;
             openglWidgetOutput->addObject(data);
