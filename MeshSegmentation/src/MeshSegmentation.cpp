@@ -5,6 +5,7 @@
 #include "Segmenter.h"
 #include "PlanarSegment.h"
 #include "SphericalSegment.h"
+#include <random>
 using namespace MeshReader;
 
 MeshSegmentation::MeshSegmentation(QWidget* parent)
@@ -67,8 +68,8 @@ void MeshSegmentation::onSegmentation()
     SphericalSegment* spherical;
     Segmenter segmenter;
 
-    float red[3] = { 1.0, 0.0, 0.0 };
-    float blue[3] = { 0.0, 0.0, 1.0 };
+    float random[3];
+    float white[3] = { 1.0, 1.0, 1.0 };
 
     // Get planar surfaces as a pointer to vector of Triangulations
     std::vector<Triangulation>* segments = segmenter.processPlanarSurfaces(inputTriangulation);
@@ -81,8 +82,13 @@ void MeshSegmentation::onSegmentation()
         // Iterate through planar surfaces and render
         for (int i = 0; i < planar->planarSurfaces.size(); i++)
         {
+            for (int i = 0; i < 3; i++) {
+                random[0] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+                random[1] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+                random[2] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+            }
             Triangulation triangulation = planar->planarSurfaces[i];
-            OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, red);
+            OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, random);
             data.drawStyle = OpenGlWidget::TRIANGLES;
             openglWidgetOutput->addObject(data);
         }
@@ -101,14 +107,22 @@ void MeshSegmentation::onSegmentation()
         // Iterate through spherical surfaces and render
         for (int i = 0; i < spherical->sphericalSurfaces.size(); i++)
         {
+            for (int i = 0; i < 3; i++) {
+                random[0] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+                random[1] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+                random[2] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+            }
             Triangulation triangulation = spherical->sphericalSurfaces[i];
-            OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, blue);
+            OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, random);
             data.drawStyle = OpenGlWidget::TRIANGLES;
             openglWidgetOutput->addObject(data);
         }
 
         delete spherical;  // Free memory after use
     }
+    OpenGlWidget::Data data = convertTriangulationToGraphicsObject(inputTriangulation, white);
+    data.drawStyle = OpenGlWidget::TRIANGLES;
+    openglWidgetOutput->addObject(data);
 
     delete segments;  // Free the dynamically allocated vector memory
 }
