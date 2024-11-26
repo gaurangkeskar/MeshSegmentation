@@ -78,10 +78,6 @@ bool Utilities::findIntersection(const RealPoint& p1, const RealPoint& n1, const
     // Compute a point on the second line using parameter s
     RealPoint checkPoint = p2 + n2 * s;
 
-    // Check if the two computed points (intersection and checkPoint) are close enough
-    if ((intersection - checkPoint).X() < TOLERANCE && (intersection - checkPoint).Y() < TOLERANCE && (intersection - checkPoint).Z() < TOLERANCE) {
-        return true;
-    }
 
     if (magnitude(intersection - checkPoint) < TOLERANCE)
         return true;

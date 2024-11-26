@@ -24,5 +24,3 @@ namespace Geometry
 		double mZ;
 	};
 }
-
-
