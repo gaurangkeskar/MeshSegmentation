@@ -115,6 +115,12 @@
     <QtMoc Include="headers\OpenglWidget.h" />
     <QtMoc Include="headers\MeshSegmentation.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\shadedFrag.glsl" />
+    <None Include="shaders\shadedVert.glsl" />
+    <None Include="shaders\wireFrag.glsl" />
+    <None Include="shaders\wireVert.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

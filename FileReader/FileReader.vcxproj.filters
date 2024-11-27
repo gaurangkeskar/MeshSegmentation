@@ -24,10 +24,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Reader.cpp">
-      <Filter>Resource Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\STLReader.cpp">
-      <Filter>Resource Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

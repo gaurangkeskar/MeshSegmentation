@@ -21,6 +21,9 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{98fd6b9e-52fc-42e7-ad40-21b0ebfe1538}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="MeshSegmentation.qrc">
@@ -77,5 +80,19 @@
     <QtMoc Include="headers\GraphicsSynchronizer.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\shadedFrag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\shadedVert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\wireFrag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\wireVert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
