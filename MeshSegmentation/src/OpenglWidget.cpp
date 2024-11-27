@@ -33,6 +33,8 @@ void OpenGlWidget::removeObject(int id)
     
     for (int i = 0; i < drawingObjects.size(); i++) {
         if (drawingObjects[i].id == id) {
+            drawingObjects[i].vao->destroy();
+            drawingObjects[i].vbo.destroy();
             drawingObjects.erase(drawingObjects.begin() + i);
         }
     }
@@ -175,7 +177,7 @@ int OpenGlWidget::buildDrawingObjects(Data data)
 
     drawingObject.numVertices = data.vertices.size();
     drawingObject.drawStyle = data.drawStyle;
-    drawingObject.id = drawingObjects.size();
+    drawingObject.id = drawingObjects.size() + 1;
     drawingObjects.push_back(drawingObject);
     //idToIndex.insert(drawingObjects.size(), drawingObjects.size() - 1);
     update();

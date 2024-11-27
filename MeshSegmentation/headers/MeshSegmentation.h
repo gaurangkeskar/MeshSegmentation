@@ -25,7 +25,6 @@ private slots:
 private:
     bool showPlanar = false;
     bool showSpherical = false;
-    int objectCount = 0;
 
     void setupUi();
     OpenGlWidget::Data convertTriangulationToGraphicsObject(const Triangulation& inputTriangulation, float clr[3]);

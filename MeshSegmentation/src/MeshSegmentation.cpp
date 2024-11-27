@@ -64,6 +64,7 @@ void MeshSegmentation::onLoadFileClick()
 
 void MeshSegmentation::onSegmentation()
 {
+    openglWidget->removeObject(1);
     PlanarSegment* planar;
     SphericalSegment* spherical;
     Segmenter segmenter;
@@ -90,7 +91,7 @@ void MeshSegmentation::onSegmentation()
             Triangulation triangulation = planar->planarSurfaces[i];
             OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, random);
             data.drawStyle = OpenGlWidget::TRIANGLES;
-            openglWidgetOutput->addObject(data);
+            openglWidget->addObject(data);
         }
 
         delete planar;  // Free memory after use
@@ -115,14 +116,14 @@ void MeshSegmentation::onSegmentation()
             Triangulation triangulation = spherical->sphericalSurfaces[i];
             OpenGlWidget::Data data = convertTriangulationToGraphicsObject(triangulation, random);
             data.drawStyle = OpenGlWidget::TRIANGLES;
-            openglWidgetOutput->addObject(data);
+            openglWidget->addObject(data);
         }
 
         delete spherical;  // Free memory after use
     }
     OpenGlWidget::Data data = convertTriangulationToGraphicsObject(inputTriangulation, white);
     data.drawStyle = OpenGlWidget::TRIANGLES;
-    openglWidgetOutput->addObject(data);
+    openglWidget->addObject(data);
 
     delete segments;  // Free the dynamically allocated vector memory
 }
@@ -153,11 +154,6 @@ void MeshSegmentation::loadSTLFile(const QString& filePath, Triangulation& input
     data = convertTriangulationToGraphicsObject(inputTriangulation, white);
     data.drawStyle = OpenGlWidget::TRIANGLES;
     openglWidget->addObject(data);
-    objectCount++;
-    if (objectCount == 3) {
-        openglWidget->removeObject(1);
-        //openglWidget->removeObject(1);
-    }
 }
 
 OpenGlWidget::Data MeshSegmentation::convertTriangulationToGraphicsObject(const Triangulation& triangulation, float clr[3])
